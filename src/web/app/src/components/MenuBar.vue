@@ -9,7 +9,8 @@
     <el-submenu index="2" class="navbar-submenu" popper-class="navbar-submenu-menu" v-if="isLogin" v-loading.fullscreen.lock="isFullscreenLoading"
       style="{}">
       <template slot="title"> 
-        <i class="el-icon-user-solid"></i> {{ userNickname }}
+        <i class="el-icon-user-solid"></i> 
+        <span class="hidden-sm-and-down">{{ userNickname }}</span>
       </template>
       <el-menu-item index="/analyze" :disabled="!isLogin">
         <i class="el-icon-data-analysis"></i>
