@@ -75,6 +75,16 @@
   }
 
   .fade-enter, .fade-leave-active {
-    opacity: 0
+    opacity: 0;
   }
+
+  .el-dialog__body {
+    word-break: normal !important;
+  }
+
+  @media (max-width: 991px) { 
+    .el-dialog {
+      width: 80% !important;
+    }
+}
 </style>
