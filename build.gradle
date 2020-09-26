@@ -11,6 +11,10 @@ buildscript {
     }
 }
 
+plugins {
+    id "jacoco"
+}
+
 apply plugin: 'java'
 apply plugin: 'eclipse'
 apply plugin: 'idea'
@@ -25,6 +29,31 @@ apply plugin: 'io.spring.dependency-management'
 group = 'sg.edu.nus.comp.viz'
 version = '0.0.1-SNAPSHOT'
 sourceCompatibility = 1.8
+
+test {
+    useJUnitPlatform()
+
+    testLogging {
+        events 'FAILED', 'SKIPPED'
+    }
+    // uncomment if the tests reports are not generated
+    // ignoreFailures true
+    // reports.html.enabled = true
+    finalizedBy jacocoTestReport
+}
+
+jacocoTestReport {
+    dependsOn test // tests are required to run before generating the report
+
+    reports {
+        xml.enabled true
+        csv.enabled false
+    }
+}
+
+jacoco {
+    toolVersion = "0.8.5"
+}
 
 repositories {
     mavenCentral()
@@ -60,6 +89,7 @@ dependencies {
     runtime("com.google.cloud.sql:mysql-socket-factory:1.0.9")
 
     // test dependencies
+    implementation 'org.junit.jupiter:junit-jupiter:5.4.2'
     testCompile('org.springframework.boot:spring-boot-starter-test')
     testCompile("com.google.appengine:appengine-api-stubs:1.9.+")
     testCompile("com.google.appengine:appengine-testing:1.9.+")
