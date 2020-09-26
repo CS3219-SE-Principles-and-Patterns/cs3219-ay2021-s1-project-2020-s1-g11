@@ -6,7 +6,8 @@
     "serve": "vue-cli-service serve --port 4040",
     "build": "vue-cli-service build",
     "lint": "vue-cli-service lint",
-    "test:unit": "vue-cli-service test:unit"
+    "test:unit": "vue-cli-service test:unit",
+    "coveralls": "cat ../../../build/test-results/lcov.info | coveralls"
   },
   "dependencies": {
     "@fullcalendar/core": "^4.4.2",
@@ -50,6 +51,7 @@
     "@vue/test-utils": "^1.0.3",
     "babel-core": "7.0.0-bridge.0",
     "babel-jest": "^23.0.1",
+    "coveralls": "^3.1.0",
     "vue-cli-plugin-element": "^1.0.0",
     "vue-template-compiler": "^2.6.11"
   },
