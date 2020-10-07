@@ -5,7 +5,7 @@ import sg.edu.nus.comp.cs3219.viz.common.entity.record.Version;
 
 import java.util.List;
 
-public interface VersionRepository extends JpaRepository<Version, Version.VersionPK> {
+public interface VersionRepository extends JpaRepository<Version, Version.VersionPk> {
 
     List<Version> findById_DataSetEquals(String dataSet);
 
