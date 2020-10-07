@@ -41,7 +41,7 @@ public class VersionController extends BaseRestController{
 
         return ResponseEntity
                 // TODO: might change what URI is returned
-                .created(new URI("/version/" + newVersion.getId()))
+                .created(new URI("/version/" + newVersion.getPk()))
                 .body(newVersion);
     }
 }

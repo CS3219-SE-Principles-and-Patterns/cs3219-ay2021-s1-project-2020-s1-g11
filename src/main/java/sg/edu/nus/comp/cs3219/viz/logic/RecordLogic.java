@@ -40,7 +40,7 @@ public class RecordLogic {
         // remove author entries of indicated version. This should effectively be 'updating' of author entries
         // It is of reasonable assumption that all records within the same upload are of the same version
         AuthorRecord temp = authorRecordList.get(0);
-        Version v = new Version(new Version.VersionPK(dataSet, "AuthorRecord", temp.getVersion().getId().getVersion()));
+        Version v = new Version(new Version.VersionPk(dataSet, "AuthorRecord", temp.getVersion().getPk().getVersionId()));
         authorRecordRepository.deleteAllByVersionEquals(v);
 
         authorRecordRepository.saveAll(authorRecordList.stream().peek(r -> {
@@ -60,7 +60,7 @@ public class RecordLogic {
             return;
         }
         ReviewRecord temp = reviewRecordList.get(0);
-        Version v = new Version(new Version.VersionPK(dataSet, "ReviewRecord", temp.getVersion().getId().getVersion()));
+        Version v = new Version(new Version.VersionPk(dataSet, "ReviewRecord", temp.getVersion().getPk().getVersionId()));
         reviewRecordRepository.deleteAllByVersionEquals(v);
 
         reviewRecordRepository.saveAll(reviewRecordList.stream().peek(r -> {
@@ -81,8 +81,8 @@ public class RecordLogic {
             return;
         }
         SubmissionRecord temp = submissionRecordList.get(0);
-        System.out.println(temp.getVersion().getId().getVersion());
-        Version v = new Version(new Version.VersionPK(dataSet, "SubmissionRecord", temp.getVersion().getId().getVersion()));
+        System.out.println(temp.getVersion().getPk().getVersionId());
+        Version v = new Version(new Version.VersionPk(dataSet, "SubmissionRecord", temp.getVersion().getPk().getVersionId()));
         submissionRecordRepository.deleteAllByVersionEquals(v);
 
         submissionRecordRepository.saveAll(submissionRecordList.stream().peek(s -> {
