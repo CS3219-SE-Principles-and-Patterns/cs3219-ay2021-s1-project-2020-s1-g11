@@ -47,7 +47,7 @@ public class VersionController extends BaseRestController{
 
         return ResponseEntity
                 // TODO: might change what URI is returned
-                .created(new URI("/version/" + newVersion.getPk()))
+                .created(new URI("/version/" + newVersion.getId()))
                 .body(newVersion);
     }
 
@@ -65,7 +65,7 @@ public class VersionController extends BaseRestController{
             throws URISyntaxException {
         // TODO: Request body is new entity, params represent old entity (to update)
         return ResponseEntity
-                .created(new URI("/version/" + version.getPk()))
+                .created(new URI("/version/" + version.getId()))
                 .body(version);
     }
 
