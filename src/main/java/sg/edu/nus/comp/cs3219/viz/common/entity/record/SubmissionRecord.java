@@ -145,7 +145,7 @@ public class SubmissionRecord {
     @JoinColumns({
             @JoinColumn(name = "data_set", referencedColumnName = "data_set"),
             @JoinColumn(name = "record_type", referencedColumnName = "record_type"),
-            @JoinColumn(name = "version", referencedColumnName = "version"),
+            @JoinColumn(name = "version_id", referencedColumnName = "version_id"),
     })
     private Version version;
 

@@ -26,9 +26,9 @@ public class VersionLogic {
 
     public Version saveForUser(Version version, UserInfo userInfo){
         Version newVersion = new Version();
-        Version.VersionPk newVersionID = version.getPk();
+        Version.VersionPk newVersionID = version.getId();
         newVersionID.setDataSet(userInfo.getUserEmail());
-        newVersion.setPk(newVersionID);
+        newVersion.setId(newVersionID);
 
         return versionRepository.save(newVersion);
     }

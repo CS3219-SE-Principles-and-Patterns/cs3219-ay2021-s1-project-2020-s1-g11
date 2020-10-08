@@ -16,17 +16,17 @@ import java.util.Objects;
 public class Version {
 
     @EmbeddedId
-    private VersionPk pk;
+    private VersionPk id;
 
     public Version(){}
 
-    public Version(VersionPk pk){
-        this.pk = pk;
+    public Version(VersionPk id){
+        this.id = id;
     }
 
-    public VersionPk getPk(){return pk;}
+    public VersionPk getId(){return id;}
 
-    public void setPk(VersionPk pk){this.pk = pk;}
+    public void setId(VersionPk id){this.id = id;}
 
     @Embeddable
     public static class VersionPk implements Serializable{
@@ -35,7 +35,7 @@ public class Version {
         private String dataSet;
         @Column(name = "record_type")
         private String recordType;
-        @Column(name = "version")
+        @Column(name = "version_id")
         private String versionId;
 
         public VersionPk(){}
@@ -72,7 +72,7 @@ public class Version {
             if (o == null || getClass() != o.getClass()) return false;
 
             VersionPk that = (VersionPk) o;
-            return this.dataSet.equals(that.dataSet) && this.recordType.equals((that.recordType)) && (this.versionId == that.versionId);
+            return this.dataSet.equals(that.dataSet) && this.recordType.equals((that.recordType)) && (this.versionId.equals(that.versionId));
         }
 
         @Override
