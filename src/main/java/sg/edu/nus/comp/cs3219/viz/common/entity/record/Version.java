@@ -16,17 +16,17 @@ import java.util.Objects;
 public class Version {
 
     @EmbeddedId
-    private VersionPk id;
+    private VersionPk pk;
 
     public Version(){}
 
-    public Version(VersionPk id){
-        this.id = id;
+    public Version(VersionPk pk){
+        this.pk = pk;
     }
 
-    public VersionPk getId(){return id;}
+    public VersionPk getPk(){return pk;}
 
-    public void setId(VersionPk id){this.id = id;}
+    public void setPk(VersionPk pk){this.pk = pk;}
 
     @Embeddable
     public static class VersionPk implements Serializable{

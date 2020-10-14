@@ -47,10 +47,10 @@ public class VersionController extends BaseRestController{
 
         return ResponseEntity
                 // TODO: might change what URI is returned
-                .created(new URI("/version/" + newVersion.getId()))
+                .created(new URI("/version/" + newVersion.getPk()))
                 .body(newVersion);
     }
-
+    
     /**
      * Update version
      * @param versionId
@@ -60,18 +60,19 @@ public class VersionController extends BaseRestController{
      * @throws URISyntaxException
      */
     @PutMapping("/version/{versionId}/{recordType}")
-    public ResponseEntity<?> updateVersion(
-            @PathVariable String versionId, @PathVariable String recordType, @RequestBody Version version)
-            throws URISyntaxException {
+    public ResponseEntity<?> updateVersion(@PathVariable String versionId, @PathVariable String recordType, @RequestBody Version version) throws URISyntaxException {
+        gateKeeper.verifyLoginAccess();
+        Version newVersion = versionLogic.updateForUser(version, versionId, recordType);
         // TODO: Request body is new entity, params represent old entity (to update)
         return ResponseEntity
-                .created(new URI("/version/" + version.getId()))
-                .body(version);
+                .created(new URI("/version/" + newVersion.getPk()))
+                .body(newVersion);
     }
 
     @DeleteMapping("/version/{versionId}/{recordType}")
-    public ResponseEntity<Void> deleteVersion(@PathVariable String versionId, @PathVariable String recordType) {
-        // TODO: Implement deletion
+    public ResponseEntity<Void> deleteVersion(@RequestBody Version version) throws URISyntaxException {
+        gateKeeper.verifyLoginAccess();
+        versionLogic.deleteForUser(version);
         return ResponseEntity
                 .ok()
                 .body(null);

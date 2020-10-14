@@ -40,7 +40,7 @@ public class RecordLogic {
         // remove author entries of indicated version. This should effectively be 'updating' of author entries
         // It is of reasonable assumption that all records within the same upload are of the same version
         AuthorRecord temp = authorRecordList.get(0);
-        Version v = new Version(new Version.VersionPk(dataSet, "AuthorRecord", temp.getVersion().getId().getVersionId()));
+        Version v = new Version(new Version.VersionPk(dataSet, "AuthorRecord", temp.getVersion().getPk().getVersionId()));
         authorRecordRepository.deleteAllByVersionEquals(v);
 
         authorRecordRepository.saveAll(authorRecordList.stream().peek(r -> {
@@ -60,7 +60,7 @@ public class RecordLogic {
             return;
         }
         ReviewRecord temp = reviewRecordList.get(0);
-        Version v = new Version(new Version.VersionPk(dataSet, "ReviewRecord", temp.getVersion().getId().getVersionId()));
+        Version v = new Version(new Version.VersionPk(dataSet, "ReviewRecord", temp.getVersion().getPk().getVersionId()));
         reviewRecordRepository.deleteAllByVersionEquals(v);
 
         reviewRecordRepository.saveAll(reviewRecordList.stream().peek(r -> {
@@ -81,8 +81,8 @@ public class RecordLogic {
             return;
         }
         SubmissionRecord temp = submissionRecordList.get(0);
-        System.out.println(temp.getVersion().getId().getVersionId());
-        Version v = new Version(new Version.VersionPk(dataSet, "SubmissionRecord", temp.getVersion().getId().getVersionId()));
+        System.out.println(temp.getVersion().getPk().getVersionId());
+        Version v = new Version(new Version.VersionPk(dataSet, "SubmissionRecord", temp.getVersion().getPk().getVersionId()));
         submissionRecordRepository.deleteAllByVersionEquals(v);
 
         submissionRecordRepository.saveAll(submissionRecordList.stream().peek(s -> {
@@ -107,5 +107,23 @@ public class RecordLogic {
             s.setAuthorSet(submissionAuthorRecords);
             // the other field can be arbitrary
         }).collect(Collectors.toList()));
+    }
+
+    @Transactional
+    public void deleteAuthorRecord(String dataSet, String versionId) {
+        Version v = new Version(new Version.VersionPk(dataSet, "AuthorRecord", versionId));
+        submissionRecordRepository.deleteAllByVersionEquals(v);
+    }
+    
+    @Transactional
+    public void deleteReviewRecord(String dataSet, String versionId) {
+        Version v = new Version(new Version.VersionPk(dataSet, "ReviewRecord", versionId));
+        submissionRecordRepository.deleteAllByVersionEquals(v);
+    }
+
+    @Transactional
+    public void deleteSubmissionRecord(String dataSet, String versionId) {
+        Version v = new Version(new Version.VersionPk(dataSet, "SubmissionRecord", versionId));
+        submissionRecordRepository.deleteAllByVersionEquals(v);
     }
 }

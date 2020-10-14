@@ -18,8 +18,8 @@ public class VersionSerializer extends StdSerializer<Version> {
     @Override
     public void serialize(Version value, JsonGenerator gen, SerializerProvider provider) throws IOException {
         gen.writeStartObject();
-        gen.writeStringField("recordType", value.getId().getRecordType());
-        gen.writeStringField("versionId", value.getId().getVersionId());
+        gen.writeStringField("recordType", value.getPk().getRecordType());
+        gen.writeStringField("versionId", value.getPk().getVersionId());
         gen.writeEndObject();
     }
 }

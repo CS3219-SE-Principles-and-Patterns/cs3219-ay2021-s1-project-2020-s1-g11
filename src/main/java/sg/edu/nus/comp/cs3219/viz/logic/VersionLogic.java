@@ -3,6 +3,7 @@ package sg.edu.nus.comp.cs3219.viz.logic;
 import org.springframework.stereotype.Component;
 import sg.edu.nus.comp.cs3219.viz.common.datatransfer.UserInfo;
 import sg.edu.nus.comp.cs3219.viz.common.entity.record.Version;
+import sg.edu.nus.comp.cs3219.viz.common.entity.record.Version.VersionPk;
 import sg.edu.nus.comp.cs3219.viz.storage.repository.VersionRepository;
 
 import java.util.List;
@@ -26,11 +27,26 @@ public class VersionLogic {
 
     public Version saveForUser(Version version, UserInfo userInfo){
         Version newVersion = new Version();
-        Version.VersionPk newVersionID = version.getId();
+        Version.VersionPk newVersionID = version.getPk();
         newVersionID.setDataSet(userInfo.getUserEmail());
-        newVersion.setId(newVersionID);
+        newVersion.setPk(newVersionID);
 
         return versionRepository.save(newVersion);
     }
 
+    public Version updateForUser(Version version, String newVersionId, String newRecordType) {
+        Version versionToDelete = versionRepository.getOne(version.getPk());
+        VersionPk versionPk = versionToDelete.getPk();
+
+        versionPk.setVersionId(newVersionId);
+        versionPk.setRecordType(newRecordType);
+        Version newVersion = new Version(versionPk);
+
+        versionRepository.delete(versionToDelete);
+        return versionRepository.save(newVersion);
+    }
+
+    public void deleteForUser(Version version) {
+        versionRepository.delete(version);
+    }
 }
