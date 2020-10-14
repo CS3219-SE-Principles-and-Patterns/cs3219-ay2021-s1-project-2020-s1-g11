@@ -5,11 +5,11 @@ import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMock
 import org.springframework.boot.test.context.SpringBootTest;
 import sg.edu.nus.comp.cs3219.viz.VizApplication;
 import sg.edu.nus.comp.cs3219.viz.storage.repository.PresentationAccessControlRepository;
-import sg.edu.nus.comp.cs3219.viz.test.BaseTestCase;
+import sg.edu.nus.comp.cs3219.viz.test.BaseComponentTest;
 
 @SpringBootTest(classes = VizApplication.class)
 @AutoConfigureMockMvc
-class GateKeeperTest extends BaseTestCase {
+class GateKeeperComponentTest extends BaseComponentTest {
 
     @Autowired
     private static PresentationAccessControlRepository pacr;
