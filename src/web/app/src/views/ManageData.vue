@@ -9,6 +9,7 @@
     <el-card v-if="isDataListEmpty" >
       <EmptyData />
     </el-card>
+    <!--TODO: Implement Interface-->
   </el-main>
 </template>
 
@@ -25,7 +26,7 @@ export default {
       return this.$store.state.isPageLoading || this.$store.state.dbMetaData.entitiesStatus.isLoading;
     },
     isDataListEmpty() {
-      // return this.$store.state.presentation.presentationList.length <= 0;
+      // return this.$store.state.data.dataList.length <= 0;
       return true;
     },
   },
