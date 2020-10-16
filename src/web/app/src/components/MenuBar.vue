@@ -11,6 +11,10 @@
       <template slot="title"> 
         <i class="el-icon-user-solid"></i> {{ userNickname }}
       </template>
+      <el-menu-item index="/data" :disabled="!isLogin">
+        <i class="el-icon-files"></i>
+        My Data
+      </el-menu-item>
       <el-menu-item index="/analyze" :disabled="!isLogin">
         <i class="el-icon-data-analysis"></i>
         My Presentations
