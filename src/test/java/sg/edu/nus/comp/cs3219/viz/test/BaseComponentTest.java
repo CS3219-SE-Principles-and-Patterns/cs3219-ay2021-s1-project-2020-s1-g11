@@ -3,7 +3,7 @@ package sg.edu.nus.comp.cs3219.viz.test;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 
-public class BaseTestCase {
+public class BaseComponentTest {
     protected static final GaeSimulation gaeSimulation = GaeSimulation.inst();
 
     @BeforeClass
