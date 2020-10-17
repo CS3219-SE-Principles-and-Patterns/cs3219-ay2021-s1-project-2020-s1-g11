@@ -4,7 +4,10 @@
     <!-- right part of the page -->
     <el-col :span="12" class="map-result">
       <el-card>
-          <h3>Mapping</h3>
+          <div>
+            <h3 class="mapping-header">Mapping</h3>
+            <el-button class="load-default-btn" type="text" v-on:click="loadPredefined">Load Default</el-button>
+          </div>
           <transition-group name="map-group" tag="div">
             <div class="pair-tag" v-for="(item, index) in mappedPairs" v-bind:key="index">
               <el-tag size="medium">{{ dbList.fieldMetaDataList[item[0]].type }}</el-tag>
@@ -58,8 +61,8 @@
         <!-- button group -->
         <el-row class="button-row">
           <el-col>
-            <el-button class="back-button" icon="el-icon-upload" type="success" v-on:click="uploadClicked">Upload</el-button>
-            <el-button class="back-button" icon="el-icon-back" type="info" v-on:click="backClicked">Back</el-button>
+            <el-button class="back-button" type="success" v-on:click="uploadClicked">Confirm</el-button>
+            <el-button class="back-button" type="info" v-on:click="backClicked">Cancel</el-button>
           </el-col>
         </el-row>
       <!-- end of button group -->
@@ -68,7 +71,7 @@
     <!-- end of left part of the page -->
 
     <!-- dialogs -->
-    <el-dialog
+    <!-- <el-dialog
       title="Confirm"
       :visible.sync="hasSubmitted"
       width="30%" center>
@@ -77,22 +80,14 @@
         <el-button v-on:click="hasSubmitted = false">Cancel</el-button>
         <el-button type="primary" v-on:click="submitMapping">Confirm</el-button>
       </span>
-    </el-dialog>
-    <el-dialog
-      title="Success"
-      :visible.sync="uploadSuccess"
-      width="30%" center>
-      <span>You have successfully imported data using the column mapping!</span>
-      <span slot="footer" class="dialog-footer">
-        <el-button type="primary" v-on:click="closeSuccess">Sure</el-button>
-      </span>
-    </el-dialog>
+    </el-dialog> -->
     <!-- end of dialogs -->
   </el-row>
 </template>
 
 <script>
   import {deepCopy, filterPredefinedMap} from "@/common/utility"
+  import PredefinedMappings from "@/store/data/predefinedMapping"
 
   export default {
     name: "MappingTool",
@@ -104,18 +99,19 @@
 
         // ordered list of tags that have been
         // mapped with their data type details
-        mappedDBTag: filterPredefinedMap(deepCopy(this.$store.state.dataMapping.data.predefinedMapping.dbTagIndices),
-          this.$store.state.dataMapping.data.dbSchema.fieldMetaDataList),
-        mappedImportTag: filterPredefinedMap(deepCopy(this.$store.state.dataMapping.data.predefinedMapping.importedTagIndices),
-          this.$store.state.dataMapping.data.uploadedLabel),
+        mappedDBTag: [],
+        mappedImportTag: [],
 
         hasSubmitted: false,
         tableType: ""
       };
     },
     computed: {
+      currentRecordIndex() {
+        return this.$store.state.dataMapping.data.currentRecordIndex;
+      },
       dbList: function () {
-        return this.$store.state.dataMapping.data.dbSchema
+        return this.$store.state.dataMapping.data.records[this.$store.state.dataMapping.data.currentRecordIndex].dbSchema
       },
       // a list of size k * 2, k is the number of mapped pairs
       // the mapped pairs are indexes.
@@ -129,11 +125,11 @@
       // generates imported tags.
       // if initially no tag, just display column number
       importList: function () {
-        if (this.$store.state.dataMapping.data.hasHeader) {
-          return this.$store.state.dataMapping.data.uploadedLabel;
+        if (this.$store.state.dataMapping.data.records[this.$store.state.dataMapping.data.currentRecordIndex].hasHeader) {
+          return this.$store.state.dataMapping.data.records[this.$store.state.dataMapping.data.currentRecordIndex].uploadedLabel;
         }
         let lst = [];
-        for (let i = 0; i < this.$store.state.dataMapping.data.uploadedLabel.length; i++) {
+        for (let i = 0; i < this.$store.state.dataMapping.data.records[this.$store.state.dataMapping.data.currentRecordIndex].uploadedLabel.length; i++) {
           lst.push("Column " + (i + 1));
         }
         return lst;
@@ -152,6 +148,10 @@
 
     // display errors
     watch: {
+      currentRecordIndex() {
+        this.mappedDBTag = [];
+        this.mappedImportTag = [];
+      },
       errors(newValue) {
         if (newValue.length > 0) {
           this.$notify.error({
@@ -162,6 +162,13 @@
       }
     },
     methods: {
+      loadPredefined() {
+        let predefinedMapping = PredefinedMappings[this.$store.state.dataMapping.data.currentRecordIndex + 1].mapping;
+        this.mappedDBTag = filterPredefinedMap(deepCopy(predefinedMapping.dbTagIndices),
+          this.$store.state.dataMapping.data.records[this.$store.state.dataMapping.data.currentRecordIndex].dbSchema.fieldMetaDataList);
+        this.mappedImportTag = filterPredefinedMap(deepCopy(predefinedMapping.importedTagIndices),
+          this.$store.state.dataMapping.data.records[this.$store.state.dataMapping.data.currentRecordIndex].uploadedLabel);
+      },
       dbTagClicked: function (idx) {
         if (idx === this.selectedDBTag) {
           this.selectedDBTag = -1;
@@ -192,48 +199,17 @@
         this.mappedDBTag.splice(idx, 1);
         this.mappedImportTag.splice(idx, 1);
       },
-      backClicked: function () {
-        this.$store.commit("clearDBSchema");
-        this.$store.commit("clearUploadedFile");
-        this.$store.commit("clearFormatType");
-        this.$store.commit("clearTableType");
-        this.$store.commit("clearHasHeader");
-        this.$store.commit("clearMapping");
-        this.$store.commit("clearPredefinedMapping");
-        this.$store.commit("clearVersionId");
-        this.$store.commit("clearPredefinedSwitch");
-        this.$store.commit("clearIsNewVersion");
+      backClicked() {
+        this.$emit('close-dialog');
       },
       uploadClicked: function () {
         let map = deepCopy(this.mappedPairs);
         this.$store.commit("setMapping", {"map": map});
         if (this.errors.length === 0) {
           this.hasSubmitted = true;
+          this.$emit('close-dialog');
         }
       },
-      submitMapping: function () {
-        this.hasSubmitted = false;
-        if (this.$store.state.dataMapping.data.isNewVersion) {
-          this.$store.dispatch("persistMappingNewVersion");
-        } else {
-          this.$store.dispatch("persistMappingOldVersion");
-        }
-      },
-      closeSuccess: function () {
-        this.$store.commit("setUploadSuccess", false);
-        this.$store.commit("clearDBSchema");
-        this.$store.commit("clearUploadedFile");
-        this.$store.commit("clearFormatType");
-        this.$store.commit("clearTableType");
-        this.$store.commit("clearHasHeader");
-        this.$store.commit("clearMapping");
-        this.$store.commit("clearError");
-        this.$store.commit("clearPredefinedMapping");
-        this.$store.commit("clearVersionId");
-        this.$store.commit("clearPredefinedSwitch");
-        this.$store.commit("clearIsNewVersion");
-        this.$store.dispatch('getVersionList');
-      }
     },
     mounted() {
     },
@@ -402,7 +378,6 @@
   .no-map-info {
     color: #777;
     font-weight: 300;
-    position: absolute;
     top: 65px;
     margin-left: 10px;
   }
@@ -423,5 +398,14 @@
 
   .button-row {
     margin-top: 40px;
+  }
+
+  .mapping-header {
+    display: inline-block;
+  }
+
+  .load-default-btn {
+    float: right;
+    margin: 10px 24px;
   }
 </style>

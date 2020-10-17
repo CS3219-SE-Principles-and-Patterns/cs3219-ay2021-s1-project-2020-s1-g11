@@ -8,9 +8,33 @@
     </el-alert>
 
     <div v-if="isLogin">
-      <mapping-tool v-if="isReadyForMapping" ref="mapTool"></mapping-tool>
+      <el-dialog
+        :title="dbSchemas.length === 0 ? '' : dbSchemas[currentRecordIndex].name"
+        :visible.sync="showMappingTool"
+        width="80%"
+        :show-close="false">
+        <mapping-tool ref="mapTool" v-on:close-dialog="showMappingTool = false"></mapping-tool>
+      </el-dialog>
+      <el-dialog
+        title="Success"
+        :visible.sync="uploadSuccess"
+        width="30%" center>
+        <span>You have successfully imported data using the column mapping!</span>
+        <span slot="footer" class="dialog-footer">
+          <el-button type="primary" v-on:click="closeSuccess">OK</el-button>
+        </span>
+      </el-dialog>
+      <el-dialog
+        title="Error"
+        :visible.sync="showVersionConflict"
+        width="30%" center>
+        <span>Records with same conference name and year exist! Please choose a different conference name or year.</span>
+        <span slot="footer" class="dialog-footer">
+          <el-button type="primary" v-on:click="() => { showVersionConflict = false; }">OK</el-button>
+        </span>
+      </el-dialog>
 
-      <el-card v-else>
+      <el-card>
         <div slot="header" class="clearfix">
           <span>Upload Data</span>
         </div>
@@ -18,60 +42,81 @@
       <div class="section">
         <h2> Record Information </h2>
         <el-divider></el-divider>
-        
-        <div class="form-card">
-          <label class="label"> Conference Type </label>
-          <br/>
-          <el-radio-group v-model="formatType" size="medium">
-            <el-radio-button :label="1">EasyChair</el-radio-button>
-            <el-radio-button :label="2">SoftConf</el-radio-button>
-          </el-radio-group>
-        </div>
+        <el-row class="form-card">
+          <el-col :sm="12" :md="4" class="conf-name">
+            <label class="label"> Conference Name </label>
+            <br/>
+            <el-input v-model="conferenceName" class="form-item" placeholder="Conference Name"></el-input>
+          </el-col>
+          <el-col :sm="12" :md="4">
+            <label class="label"> Year </label>
+            <br/>
+            <el-input v-model="conferenceYear" class="form-item" placeholder="Year"></el-input>
+          </el-col>
+        </el-row>
 
         <div class="form-card">
-          <label class="label"> Table Type </label>
+          <label class="label"> Data Format </label>
           <br/>
-          <el-radio-group v-model="tableType" size="medium">
-            <el-radio-button v-for="(schema, idx) in dbSchemas" 
-              :label="idx" 
-              :key="schema.name"> 
-              {{ schema.name }}
-            </el-radio-button>
+          <el-radio-group v-model="formatType" class="form-item">
+            <el-radio :label="1">EasyChair</el-radio>
+            <el-radio :label="2">SoftConf</el-radio>
           </el-radio-group>
         </div>
       </div>
 
-      <div class="section" v-if="isReadyForChoosing">
+      <div class="section">
         <h2>
-          Mapping Information
-
-          <el-tooltip placement="top">
-            <div slot="content">
-              Optional
-            </div>
-            <el-button type="text" icon="el-icon-info" circle></el-button>
-          </el-tooltip>
+          Data Files
         </h2>
         <el-divider></el-divider>
 
-        <div class="form-card">
-          <el-switch
-            v-model="hasHeader"
-            active-text="Has Header"
-            inactive-text="No Header">
-          </el-switch>
-        </div>
+        <el-row>
+          <el-col :md="24 / records.length" v-for="(record, idx) in records" :key="idx">
+            <label class="label">{{ dbSchemas[idx].name }}</label>
+            <br/>
+            <el-upload class="form-item" drag action=""
+                  :auto-upload="false"
+                  :show-file-list="false"
+                  :multiple="false"
+                  :on-change="file => fileUploadHandler(file, record.tableType)"
+                  :disabled="record.mappingFinished"
+                  >
+              <div v-if="!record.mappingFinished">
+                <i class="el-icon-upload"></i>
+                <div class="el-upload__text">Drop .csv file here or <em>click to upload</em></div>
+              </div>
+              <div v-else>
+                <i class="el-icon-upload"></i>
+                <div class="el-upload__text">File attached successfully</div>
+              </div>
+            </el-upload>
+            <div v-if="!record.mappingFinished">
+              <div class="form-card">
+                <el-checkbox :value="record.hasHeader" v-on:change="val => setHasHeader(val, record.tableType)">
+                  File Has Header
+                </el-checkbox>
+              </div>
+            </div>
+            <div v-else>
+              <div class="form-card">
+                <el-button icon="el-icon-delete" type="danger" v-on:click="() => fileDeleteHandler(record.tableType)">Delete File</el-button>
+              </div>
+            </div>
+          </el-col>
+        </el-row>
+      </div>
 
-        <div class="form-card" >
-          <el-switch
-            v-model="hasPredefined"
-            active-text="Predefined Mapping"
-            inactive-text="No Predefined Mapping">
-          </el-switch>
-        </div> 
+      <div class="section">
+        <el-button 
+          icon="el-icon-upload2" 
+          type="primary" 
+          v-on:click="submitMapping()"
+          :disabled="isReadyForUpload"
+        >Upload Data</el-button>
       </div>
       
-      <div class="section" v-if="isReadyForChoosing">
+      <!-- <div class="section">
         <h2> 
           Version Information
 
@@ -99,18 +144,7 @@
               placeholder="Input Version"
             ></el-autocomplete>
           </el-col>
-        </el-row>
-        <div class="form-card">
-          <el-upload v-if="isReadyForUpload" drag action=""
-                    :auto-upload="false"
-                    :show-file-list="false"
-                    :multiple="false"
-                    :on-change="fileUploadHandler">
-            <i class="el-icon-upload"></i>
-            <div class="el-upload__text">Drop .csv file here or <em>click to upload</em></div>
-          </el-upload>
-        </div>
-      </div>
+        </el-row> -->
 
       </el-card>
     </div>
@@ -120,8 +154,6 @@
 <script>
   import MappingTool from "@/components/MappingTool.vue";
   import Papa from "papaparse";
-  import {REVIEW_DATE_DAY_FIELD, REVIEW_DATE_TIME_FIELD, REVIEW_TABLE_ID} from "@/common/const"
-  import {deepCopy} from "@/common/utility"
   import PredefinedMappings from "@/store/data/predefinedMapping"
   import moment from "moment"
 
@@ -129,7 +161,9 @@
     name: "ImportData",
     data() {
       return {
-        predefinedMappings: PredefinedMappings
+        predefinedMappings: PredefinedMappings,
+        showMappingTool: false,
+        showVersionConflict: false,
       };
     },
     beforeCreate() {
@@ -154,18 +188,34 @@
           this.$store.commit("setFormatType", newValue);
         }
       },
-      tableType: {
-        get: function () {
-          return this.$store.state.dataMapping.data.tableType;
+      records: {
+        get: function() {
+          return this.$store.state.dataMapping.data.records;
         },
         set: function (newValue) {
-          let dbSchema = deepCopy(this.dbSchemas[newValue]);
-          if (newValue === REVIEW_TABLE_ID) {
-            dbSchema.fieldMetaDataList.push(REVIEW_DATE_DAY_FIELD);
-            dbSchema.fieldMetaDataList.push(REVIEW_DATE_TIME_FIELD);
-          }
-          this.$store.commit("setTableType", newValue);
-          this.$store.commit("setDBSchema", dbSchema);
+          this.$store.commit("setRecords", newValue);
+        }
+      },
+      conferenceName: {
+        get() {
+          let idx = this.$store.state.dataMapping.data.versionId.lastIndexOf('_');
+          return this.$store.state.dataMapping.data.versionId.substring(0, idx);
+        },
+        set(newValue) {
+          let idx = this.$store.state.dataMapping.data.versionId.lastIndexOf('_');
+          let year = this.$store.state.dataMapping.data.versionId.substring(idx + 1);
+          this.$store.commit("setVersionId", newValue + '_' + year);
+        }
+      },
+      conferenceYear: {
+        get() {
+          let idx = this.$store.state.dataMapping.data.versionId.lastIndexOf('_');
+          return this.$store.state.dataMapping.data.versionId.substring(idx + 1);
+        },
+        set(newValue) {
+          let idx = this.$store.state.dataMapping.data.versionId.lastIndexOf('_');
+          let name = this.$store.state.dataMapping.data.versionId.substring(0, idx);
+          this.$store.commit("setVersionId", name + '_' + newValue);
         }
       },
       versionId: {
@@ -176,53 +226,36 @@
           this.$store.commit("setVersionId", newValue);
         }
       },
-      hasHeader: {
-        get: function () {
-          return this.$store.state.dataMapping.data.hasHeader;
-        },
-        set: function (newValue) {
-          this.$store.commit("setHasHeader", newValue);
-        }
+      currentRecordIndex() {
+        return this.$store.state.dataMapping.data.currentRecordIndex;
       },
-      hasPredefined: {
-        get: function () {
-          return this.$store.state.dataMapping.data.hasPredefined;
-        },
-        set: function (newValue) {
-          this.$store.commit("setPredefinedSwitch", newValue);
-        }
-      },
-      predefinedMappingId: {
-        get: function () {
-          return this.$store.state.dataMapping.data.predefinedMappingId;
-        },
-        set: function (newValue) {
-          this.$store.commit("setPredefinedMapping", {id: newValue, mapping: PredefinedMappings[newValue].mapping});
-        }
-      },
-      isReadyForMapping: function () {
-        return this.$store.state.dataMapping.hasFileUploaded
-          && this.$store.state.dataMapping.hasFormatTypeSpecified
-          && this.$store.state.dataMapping.hasTableTypeSelected
-          && this.$store.state.dataMapping.hasHeaderSpecified
-          && this.$store.state.dataMapping.hasPredefinedSpecified
-          && this.$store.state.dataMapping.hasVersionIdSpecified;
-      },
-      uploaded: function () {
-        return this.$store.state.dataMapping.hasFileUploaded;
+      uploadSuccess: function () {
+        return this.$store.state.dataMapping.isUploadSuccess;
       },
       isReadyForUpload: function () {
-        return this.$store.state.dataMapping.hasFormatTypeSpecified
-         && this.$store.state.dataMapping.hasTableTypeSelected
-         && this.$store.state.dataMapping.hasHeaderSpecified
-         && this.$store.state.dataMapping.hasPredefinedSwitchSpecified
-         && this.$store.state.dataMapping.hasVersionIdSpecified;
+        return !(this.$store.state.dataMapping.data.records.some(record => record.fileUploaded) && 
+          this.conferenceName !== '' && this.conferenceYear !== '');
       },
-      isReadyForChoosing: function () {
-        return this.$store.state.dataMapping.hasTableTypeSelected;
+      isNewVersion: function() {
+        if (!this.$store.state.presentation.versionList) {
+          return false;
+        } else {
+          let verList = this.$store.state.presentation.versionList.map(v => v.versionId);
+          return !verList.includes(this.$store.state.dataMapping.data.versionId);
+        }
+      }
+    },
+    watch: {
+      dbSchemas(newValue) {
+        if (newValue.length > 0 && !this.$store.state.dataMapping.data.initialized) {
+          this.$store.commit('initDataRecords', this.$store.state.dbMetaData.entities);
+        }
       }
     },
     methods: {
+      setHasHeader(val, index) {
+        this.$store.commit('setHasHeader', {value: val, index: index});
+      },
       querySearch(queryString, cb) {
         // convert to array of string
         var links = this.$store.state.presentation.versionList.map(v => v.versionId);
@@ -241,95 +274,58 @@
       navigateToHomePage() {
         this.$router.replace("/home");
       },
-      fileUploadHandler: function (file) {
+      fileDeleteHandler(idx) {
+        this.$store.commit("initDataRecord", {idx: idx, schema: this.$store.state.dbMetaData.entities[idx]})
+      },
+      submitMapping() {
+        if (!this.isNewVersion) {
+          this.showVersionConflict = true;
+          return;
+        }
+        this.hasSubmitted = false;
+        this.$store.dispatch("persistMappingNewVersion");
+      },
+      closeSuccess: function () {
+        this.$router.push({ name: 'home' })
+        this.$store.commit("setUploadSuccess", false);
+        this.$store.commit('initDataRecords', this.$store.state.dbMetaData.entities);
+        this.$store.commit("clearVersionId");
+        this.$store.dispatch('getVersionList');
+      },
+      fileUploadHandler: function (file, idx) {
         // show loading and go parsing
         this.$store.commit("setPageLoadingStatus", true);
-
-        // if versionList is empty
-        // console.log(this.$store.state.presentation.versionList);
-        // filter by "AuthorRecord" "ReviewRecord" "SubmissionRecord"
-        if (!this.$store.state.presentation.versionList) {
-          this.$store.commit("setIsNewVersion", false);
-        } else {
-          // if tabletype 0 author elif 1 review elif 2 sub
-          // filter by "AuthorRecord" "ReviewRecord" "SubmissionRecord"
-          var verList;
-          switch (this.$store.state.dataMapping.data.tableType) {
-            case 0:
-              verList = this.$store.state.presentation.versionList
-                        .filter(v => v.recordType === "AuthorRecord")
-                        .map(v => v.versionId);
-              break;
-            case 1:
-              verList = this.$store.state.presentation.versionList
-                        .filter(v => v.recordType === "ReviewRecord")
-                        .map(v => v.versionId);
-              break;
-            case 2:
-              verList = this.$store.state.presentation.versionList
-                        .filter(v => v.recordType === "SubmissionRecord")
-                        .map(v => v.versionId);
-              break;
-            default:
-          }
-          this.$store.commit("setIsNewVersion", 
-                            !verList.includes(this.$store.state.dataMapping.data.versionId));
-        }
-
-        /*  tabletype 1	  1 - review 
-            tabletype 0	  2 - author
-            tabletype 2	  3 - sub */
-        // map sub to sub// rev to rev // author to author if predefined mapping specified
-        if (this.$store.state.dataMapping.data.hasPredefined) {
-            switch(this.$store.state.dataMapping.data.tableType) {
-              case 0:
-                this.$store.commit("setPredefinedMapping",
-                {id: 2, mapping: PredefinedMappings[2].mapping});
-                break;
-              case 1:
-                this.$store.commit("setPredefinedMapping",
-                {id: 1, mapping: PredefinedMappings[1].mapping});
-                break;
-              case 2:
-                this.$store.commit("setPredefinedMapping",
-                {id: 3, mapping: PredefinedMappings[3].mapping});
-                break;
-              default:
-            }
-        }
-        else {
-            this.$store.commit("setPredefinedMapping",
-             {id: 0, mapping: PredefinedMappings[0].mapping});
-        }
+        this.$store.commit("setCurrentRecordIndex", idx);
 
         Papa.parse(file.raw, {
           // ignoring empty lines in csv file
           skipEmptyLines: true,
           complete: function (result) {
-          var res=result;
-          var res2=res.data;
-          var verId = this.$store.state.dataMapping.data.versionId;
 
-          //author file preprocessing
-          if( this.$store.state.dataMapping.data.tableType=="0" ){
+            var res = result;
+            var res2 = res.data;
+            var verId = this.$store.state.dataMapping.data.versionId;
+
+            //author file preprocessing
+            if(this.$store.state.dataMapping.data.currentRecordIndex === 0) {
               var authorres=[];
               //ACL file preprocessing //Softconf
-              if(this.$store.state.dataMapping.data.formatType=="2"){
-              authorres.push(["submission #","first name","last name","email","country","organization","Web page","person #","corresponding?"]);
-              // for each row of data, manipulate temporary array element[] 
-              // then push to true array res2[] for parsing
+              if(this.$store.state.dataMapping.data.formatType === 2) {
+                authorres.push(["submission #","first name","last name","email","country","organization","Web page","person #","corresponding?"]);
+                // for each row of data, manipulate temporary array element[] 
+                // then push to true array res2[] for parsing
                 for (var i = 1; i < res2.length; i++) {
                   var x = res2[i];
                   //console.log(x);
                   var k=0,j=14,element=[],corr="",country="";
                   while(x[j]!=""){
                     if(x[j]==x[65] && x[j+1]==x[66]){
-                    corr = "yes";
-                    country=x[78];
+                      corr = "yes";
+                      country=x[78];
                     }
                     else {
-                    corr="no";
-                    country="";
+                      corr="no";
+                      country="";
                     }
                     element[k]= [x[0],x[j],x[j+1],x[j+2],country,x[j+3],"","",corr, verId];
                     authorres.push(element[k]);
@@ -344,27 +340,27 @@
 
               //author anonymization - Both formats
               var convertstring=require("convert-string");
-              for(var m=1;m<res2.length;m++){
-                  var conv1=convertstring.stringToBytes(res2[m][1]);
-                  var conv2=convertstring.stringToBytes(res2[m][2]);
-                  var firstname="";
-                  var lastname="";
-                  for(var a=0;a<conv1.length;a++){
-                      firstname=firstname.concat(String(conv1[a]+18));
-                  }
-                  for(var w=0;w<conv2.length;w++){
-                      lastname=lastname.concat(String(conv2[w]+18));
-                  }
-                  res2[m][1]=firstname;
-                  res2[m][2]=lastname;
+              for (var m=1;m<res2.length;m++) {
+                var conv1=convertstring.stringToBytes(res2[m][1]);
+                var conv2=convertstring.stringToBytes(res2[m][2]);
+                var firstname="";
+                var lastname="";
+                for (var a=0;a<conv1.length;a++) {
+                  firstname=firstname.concat(String(conv1[a]+18));
+                }
+                for (var w=0;w<conv2.length;w++) {
+                  lastname=lastname.concat(String(conv2[w]+18));
+                }
+                res2[m][1]=firstname;
+                res2[m][2]=lastname;
               }
               //console.log(res2);
-           }
+            }
 
-          //review file preprocessing
-          else if( this.$store.state.dataMapping.data.tableType=="1" ){
+            //review file preprocessing
+            else if( this.$store.state.dataMapping.data.currentRecordIndex === 1) {
               //Softconf
-              if(this.$store.state.dataMapping.data.formatType=="2"){
+              if(this.$store.state.dataMapping.data.formatType === 2) {
                 var reviewres=[];
                 reviewres.push(["Review Id","Submission Id", "Num Review Assignment", "Reviewer Name", "Expertise Level", "Review Comment","Confidence Level", "Overall Evaluation Score", "Column 9","Column 10","Column 11","Column 12", "Day of the Review Date", "Time of the Review Date", "Has Recommended for the Best Paper"]);
 
@@ -387,21 +383,21 @@
 
               //author anonymization - JCDL
               // Easy Chair
-              else if(this.$store.state.dataMapping.data.formatType=="1"){
+              else if(this.$store.state.dataMapping.data.formatType === 1){
                 var convert_string=require("convert-string");
                 for(var index=1;index<res2.length;index++){
-                    var convert=convert_string.stringToBytes(res2[index][3]);
-                    var name="";
-                    for(var idx=0;idx<convert.length;idx++){
-                        name=name.concat(String(convert[idx]+18));
-                    }
-                    res2[index][3]=name;
+                  var convert=convert_string.stringToBytes(res2[index][3]);
+                  var name="";
+                  for(var idx=0;idx<convert.length;idx++) {
+                      name=name.concat(String(convert[idx]+18));
+                  }
+                  res2[index][3]=name;
                 }
               }
             }
 
-           //ACL submission file processing
-          else if( this.$store.state.dataMapping.data.tableType=="2" ){
+            //ACL submission file processing
+            else if( this.$store.state.dataMapping.data.currentRecordIndex === 2) {
               if(this.$store.state.dataMapping.data.formatType=="2"){
               var submissionres=[];
               submissionres.push(["#", "track #", "track name", "title", "authors", "submitted","last updated", "form fields", "keywords", "decision", "notified", "reviews sent", "abstract"]);
@@ -417,35 +413,35 @@
               }
                 res2=submissionres;
               }
-          }
+            }
 
-          if(this.$store.state.dataMapping.data.formatType=="1"){
-            var tempCSV=[];
-            //author
-            if( this.$store.state.dataMapping.data.tableType=="0" ){
-              tempCSV.push(["submission #","first name","last name","email","country","organization","Web page","person #","corresponding?"]);
-            }
-            //review
-            else if(this.$store.state.dataMapping.data.tableType=="1"){
-              tempCSV.push(["Review Id","Submission Id", "Num Review Assignment", "Reviewer Name", "Expertise Level", "Review Comment","Confidence Level", "Overall Evaluation Score", "Column 9","Column 10","Column 11","Column 12", "Day of the Review Date", "Time of the Review Date", "Has Recommended for the Best Paper"]);
-            }
-            //submission
-            else if(this.$store.state.dataMapping.data.tableType=="2"){
-              tempCSV.push(["#", "track #", "track name", "title", "authors", "submitted","last updated", "form fields", "keywords", "decision", "notified", "reviews sent", "abstract"]);
-            }
-            // for each row of data, manipulate temporary array element[] 
-            // then push to true array res2[] for parsing
-            var csvRow=[];
-            for (var rowNum = 1; rowNum < res2.length; rowNum++) {
+            if (this.$store.state.dataMapping.data.formatType === 1) {
+              var tempCSV=[];
+              //author
+              if(this.$store.state.dataMapping.data.currentRecordIndex === 0){
+                tempCSV.push(["submission #","first name","last name","email","country","organization","Web page","person #","corresponding?"]);
+              }
+              //review
+              else if(this.$store.state.dataMapping.data.currentRecordIndex === 1){
+                tempCSV.push(["Review Id","Submission Id", "Num Review Assignment", "Reviewer Name", "Expertise Level", "Review Comment","Confidence Level", "Overall Evaluation Score", "Column 9","Column 10","Column 11","Column 12", "Day of the Review Date", "Time of the Review Date", "Has Recommended for the Best Paper"]);
+              }
+              //submission
+              else if(this.$store.state.dataMapping.data.currentRecordIndex === 2){
+                tempCSV.push(["#", "track #", "track name", "title", "authors", "submitted","last updated", "form fields", "keywords", "decision", "notified", "reviews sent", "abstract"]);
+              }
+              // for each row of data, manipulate temporary array element[] 
+              // then push to true array res2[] for parsing
+              var csvRow=[];
+              for (var rowNum = 1; rowNum < res2.length; rowNum++) {
                 csvRow = res2[rowNum];
                 //csvRow.push(verId);
                 tempCSV.push(csvRow);
+              }
+              res2=tempCSV;
             }
-            res2=tempCSV;
-          }
-            //console.log(res2);
             this.$store.commit("setUploadedFile",res2);
             this.$store.commit("setPageLoadingStatus", false);
+            this.showMappingTool = true;
           }.bind(this)
         });
       }
@@ -457,10 +453,6 @@
 </script>
 
 <style scoped>
-  .upload-box {
-    /*padding-top: 100px; */
-  }
-
   .upload-box .el-select {
     margin-top: 20px;
   }
@@ -504,5 +496,13 @@
 
   .section {
     padding: 0px 16px 16px 16px;
+  }
+
+  .form-item {
+    margin-top: 10px;
+  }
+
+  .conf-name {
+    margin: 0 15px 0 0;
   }
 </style>
