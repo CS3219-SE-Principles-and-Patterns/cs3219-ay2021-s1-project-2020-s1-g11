@@ -9,7 +9,7 @@ import sg.edu.nus.comp.cs3219.viz.test.BaseComponentTest;
 
 @SpringBootTest(classes = VizApplication.class)
 @AutoConfigureMockMvc
-class GateKeeperComponentTest extends BaseComponentTest {
+class GateKeeperTest extends BaseComponentTest {
 
     @Autowired
     private static PresentationAccessControlRepository pacr;
