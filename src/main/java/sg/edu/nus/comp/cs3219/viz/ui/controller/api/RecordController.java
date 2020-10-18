@@ -53,4 +53,6 @@ public class RecordController extends BaseRestController {
 
         return ResponseEntity.created(new URI("/record/review")).build();
     }
+
+    // TODO: Add CRUD endpoints for each record
 }

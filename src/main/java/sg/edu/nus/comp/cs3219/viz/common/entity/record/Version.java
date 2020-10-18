@@ -16,46 +16,46 @@ import java.util.Objects;
 public class Version {
 
     @EmbeddedId
-    private VersionPK id;
+    private VersionPk id;
 
     public Version(){}
 
-    public Version(VersionPK pk){
-        this.id = pk;
+    public Version(VersionPk id){
+        this.id = id;
     }
 
-    public VersionPK getId(){return id;}
+    public VersionPk getId(){return id;}
 
-    public void setId(VersionPK id){this.id = id;}
+    public void setId(VersionPk id){this.id = id;}
 
     @Embeddable
-    public static class VersionPK implements Serializable{
+    public static class VersionPk implements Serializable{
 
         @Column(name = "data_set")
         private String dataSet;
         @Column(name = "record_type")
         private String recordType;
-        @Column(name = "version")
-        private String version;
+        @Column(name = "version_id")
+        private String versionId;
 
-        public VersionPK(){}
+        public VersionPk(){}
 
-        public VersionPK(String dataSet, String recordType, String version){
+        public VersionPk(String dataSet, String recordType, String versionId){
             this.dataSet = dataSet;
             this.recordType = recordType;
-            this.version = version;
+            this.versionId = versionId;
         }
 
         public String getRecordType(){return recordType;}
 
         public void setRecordType(String recordType){this.recordType=recordType;}
 
-        public String getVersion() {
-            return version;
+        public String getVersionId() {
+            return versionId;
         }
 
-        public void setVersion(String version) {
-            this.version = version;
+        public void setVersionId(String version) {
+            this.versionId = version;
         }
 
         public String getDataSet() {
@@ -71,13 +71,13 @@ public class Version {
             if (this == o) return true;
             if (o == null || getClass() != o.getClass()) return false;
 
-            VersionPK that = (VersionPK) o;
-            return this.dataSet.equals(that.dataSet) && this.recordType.equals((that.recordType)) && (this.version == that.version);
+            VersionPk that = (VersionPk) o;
+            return this.dataSet.equals(that.dataSet) && this.recordType.equals((that.recordType)) && (this.versionId.equals(that.versionId));
         }
 
         @Override
         public int hashCode(){
-            return Objects.hash(dataSet,recordType,version);
+            return Objects.hash(dataSet,recordType, versionId);
         }
     }
 }
