@@ -1,51 +1,91 @@
 import axios from 'axios'
 import {processMapping} from '@/store/helpers/processor.js'
+import {REVIEW_DATE_DAY_FIELD, REVIEW_DATE_TIME_FIELD, REVIEW_TABLE_ID} from "@/common/const"
+import {deepCopy} from "@/common/utility"
 
 export default {
   state: {
     hasDBSchemaSet: false,
-    hasFileUploaded: false,
-    hasFormatTypeSpecified: false,
-    hasTableTypeSelected: false,
-    hasVersionIdSpecified: false,
     hasHeaderSpecified: false,
-    hasPredefinedSpecified: false,
-    hasPredefinedSwitchSpecified: false, // new
-    hasMappingFinished: false,
     isUploadSuccess: false,
     data: {
-      dbSchema: null,
-      uploadedData: [],
-      uploadedLabel: [],
-      mappingResult: [],
-      processedResult: [],
-      formatType: null,
-      tableType: null,
+      records: [],
+      initialized: false,
+      formatType: 1,
       isNewVersion: null,
-      versionId: null,
-      hasHeader: null,
-      hasPredefined: null, // new
-      predefinedMapping: null,
-      predefinedMappingId: null,
+      versionId: '_',
+      currentRecordIndex: 0,
     },
     error: []
   },
 
   mutations: {
+    initDataRecords(state, schemas) {
+      state.data.records = [];
+      schemas.forEach((schema, idx) => {
+        let newRecord = {
+          dbSchema: null,
+          tableType: idx,
+          hasHeader: false,
+          uploadedData: [],
+          uploadedLabel: [],
+          mappingResult: [],
+          processedResult: [],
+          fileUploaded: false,
+          mappingFinished: false,
+        };
+        let dbSchema = deepCopy(schema);
+        if (idx === REVIEW_TABLE_ID) {
+          dbSchema.fieldMetaDataList.push(REVIEW_DATE_DAY_FIELD);
+          dbSchema.fieldMetaDataList.push(REVIEW_DATE_TIME_FIELD);
+        }
+        newRecord.dbSchema = dbSchema;
+        state.data.records.push(newRecord);
+      });
+      state.data.initialized = true;
+    },
+
+    initDataRecord(state, payload) {
+      let newRecord = {
+        dbSchema: null,
+        tableType: payload.idx,
+        hasHeader: false,
+        uploadedData: [],
+        uploadedLabel: [],
+        mappingResult: [],
+        processedResult: [],
+        fileUploaded: false,
+        mappingFinished: false,
+      };
+      let dbSchema = deepCopy(payload.schema);
+      if (payload.idx === REVIEW_TABLE_ID) {
+        dbSchema.fieldMetaDataList.push(REVIEW_DATE_DAY_FIELD);
+        dbSchema.fieldMetaDataList.push(REVIEW_DATE_TIME_FIELD);
+      }
+      newRecord.dbSchema = dbSchema;
+      let oldRecords = deepCopy(state.data.records);
+      state.data.records = [];
+      for (let i = 0; i < oldRecords.length; i++) {
+        if (i === payload.idx) {
+          state.data.records.push(newRecord);
+        } else {
+          state.data.records.push(oldRecords[i])
+        }
+      }
+    },
+
+    setRecords(state, data) {
+      state.data.records = data.copy();
+    },
+
     setUploadSuccess(state, success) {
       state.isUploadSuccess = success;
     },
 
     setUploadedFile(state, data) {
-      state.data.uploadedLabel = data[0];
-      state.data.uploadedData = data;
-      state.hasFileUploaded = true;
-    },
-
-    clearUploadedFile(state) {
-      state.data.uploadedLabel = [];
-      state.data.uploadedData = [];
-      state.hasFileUploaded = false;
+      state.data.records[state.data.currentRecordIndex].uploadedLabel = data[0];
+      state.data.records[state.data.currentRecordIndex].uploadedData = data;
+      state.data.records[state.data.currentRecordIndex].fileUploaded = true;
     },
 
     setDBSchema(state, dbSchema) {
@@ -80,12 +120,10 @@ export default {
 
     setVersionId(state, selected) {
       state.data.versionId = selected;
-      state.hasVersionIdSpecified = true;
     },
 
     clearVersionId(state) {
-      state.data.versionId = null;
-      state.hasVersionIdSpecified = false;
+      state.data.versionId = '_';
     },
 
     setIsNewVersion(state, selected) {
@@ -96,53 +134,25 @@ export default {
       state.data.isNewVersion = null;
     },
 
-    setHasHeader(state, hasHeader) {
-      state.data.hasHeader = hasHeader;
-      state.hasHeaderSpecified = true;
-    },
-
-    clearHasHeader(state) {
-      state.data.hasHeader = null;
-      state.hasHeaderSpecified = false;
-    },
-
-    setPredefinedMapping(state, payload) {
-      state.data.predefinedMapping = payload.mapping;
-      state.data.predefinedMappingId = payload.id;
-      state.hasPredefinedSpecified = true;
-    },
-
-    clearPredefinedMapping(state) {
-      state.data.predefinedMapping = null;
-      state.data.predefinedMappingId = null;
-      state.hasPredefinedSpecified = false;
-    },
-
-    setPredefinedSwitch(state, hasPredefined) {
-      state.data.hasPredefined = hasPredefined;
-      state.hasPredefinedSwitchSpecified = true;
-    },
-
-    clearPredefinedSwitch(state) {
-      state.data.hasPredefined = null;
-      state.hasPredefinedSwitchSpecified = false;
+    setHasHeader(state, payload) {
+      state.data.records[payload.index].hasHeader = payload.value;
     },
 
     setMapping(state, payload) {
       try {
         state.error = [];
-        state.data.mappingResult = payload.map;
-        state.mappingFinished = true;
-        state.data.processedResult =
+        state.data.records[state.data.currentRecordIndex].mappingResult = payload.map;
+        state.data.records[state.data.currentRecordIndex].mappingFinished = true;
+        state.data.records[state.data.currentRecordIndex].processedResult =
           processMapping(payload.map,
-            state.data.uploadedData,
-            state.data.dbSchema,
-            state.data.hasHeader);
+            state.data.records[state.data.currentRecordIndex].uploadedData,
+            state.data.records[state.data.currentRecordIndex].dbSchema,
+            state.data.records[state.data.currentRecordIndex].hasHeader);
       } catch (err) {
         state.error.push(err);
-        state.mappingFinished = false;
-        state.data.mappingResult = [];
-        state.data.processedResult = [];
+        state.data.records[state.data.currentRecordIndex].mappingFinished = false;
+        state.data.records[state.data.currentRecordIndex].mappingResult = [];
+        state.data.records[state.data.currentRecordIndex].processedResult = [];
       }
     },
 
@@ -150,6 +160,10 @@ export default {
       state.data.mappingResult = [];
       state.data.processedResult = [];
       state.mappingFinished = false;
+    },
+
+    setCurrentRecordIndex(state, index) {
+      state.data.currentRecordIndex = index;
     },
 
     setDataMappingError(state, err) {
@@ -164,42 +178,54 @@ export default {
   actions: {
     async persistMappingNewVersion({commit, state}) {
       commit("setPageLoadingStatus", true);
-      let endpoint;
-      let fnKeyTable;
-      switch (state.data.tableType) {
-        case 0:
-          endpoint = "author";
-          fnKeyTable = "AuthorRecord";
-          break;
-        case 1:
-          endpoint = "review";
-          fnKeyTable = "ReviewRecord";
-          break;
-        case 2:
-          endpoint = "submission";
-          fnKeyTable = "SubmissionRecord";
-          break;
-      }
-      var fnKeyEntry = {};
-      fnKeyEntry.versionId = state.data.versionId;
-      fnKeyEntry.recordType = fnKeyTable;
-      
-      // add version to end
-      for (var i=0; i<state.data.processedResult.length; i++){
-        var row = state.data.processedResult[i];
-        row.versionId = state.data.versionId;
-      }
+      let fnKeyEntry = [];
+      let endpoints = [];
+      let records = state.data.records.filter(record => record.fileUploaded).map(record => {
+        let endpoint;
+        let fnKeyTable;
+        switch (record.tableType) {
+          case 0:
+            endpoint = "author";
+            fnKeyTable = "AuthorRecord";
+            break;
+          case 1:
+            endpoint = "review";
+            fnKeyTable = "ReviewRecord";
+            break;
+          case 2:
+            endpoint = "submission";
+            fnKeyTable = "SubmissionRecord";
+            break;
+        }
+        endpoints.push(endpoint);
+        fnKeyEntry.push({versionId: state.data.versionId, recordType: fnKeyTable});
 
-      // concurrent POST data and POST version requests 
-      axios.all([postTable(endpoint, state.data.processedResult), postVersion(fnKeyEntry)])  
-        .then(axios.spread( () => {
-          commit("setPageLoadingStatus", false);
-          commit("setUploadSuccess", true);
+        let newRecord = deepCopy(record);
+        // add version to end
+        for (var i = 0; i < newRecord.processedResult.length; i++){
+          var row = newRecord.processedResult[i];
+          row.versionId = state.data.versionId;
+        }
+
+        return newRecord;
+      });
+
+      axios.all(fnKeyEntry.map(entry => postVersion(entry)))
+        .then(axios.spread(() => {
+          axios.all(records.map((record, idx) => postTable(endpoints[idx], record.processedResult)))
+            .then(axios.spread(() => {
+              commit("setPageLoadingStatus", false);
+              commit("setUploadSuccess", true);
+            }))
+            .catch(axios.spread(function (dataErr) {
+              commit("setPageLoadingStatus", false);
+              commit("setUploadSuccess", false);
+              commit("setDataMappingError", dataErr);
+            }));
         }))
-        .catch(axios.spread(function (dataErr, verErr) {
+        .catch(axios.spread(function (verErr) {
           commit("setPageLoadingStatus", false);
           commit("setUploadSuccess", false);
-          commit("setDataMappingError", dataErr);
           commit("setDataMappingError", verErr);
         }));
     },
