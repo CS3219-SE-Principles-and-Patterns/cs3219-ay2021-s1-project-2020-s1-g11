@@ -34,6 +34,12 @@ public class VersionController extends BaseRestController{
         return versionLogic.findAllForUserWithRecordType(currentUser, recordType);
     }
 
+    /**
+     * Create new record
+     * @param version
+     * @return
+     * @throws URISyntaxException
+     */
     @PostMapping("/version")
     public ResponseEntity<?> newVersion(@RequestBody Version version) throws URISyntaxException {
         UserInfo currentUser = gateKeeper.verifyLoginAccess();
@@ -43,5 +49,31 @@ public class VersionController extends BaseRestController{
                 // TODO: might change what URI is returned
                 .created(new URI("/version/" + newVersion.getId()))
                 .body(newVersion);
+    }
+
+    /**
+     * Update version
+     * @param versionId
+     * @param recordType
+     * @param version
+     * @return
+     * @throws URISyntaxException
+     */
+    @PutMapping("/version/{versionId}/{recordType}")
+    public ResponseEntity<?> updateVersion(
+            @PathVariable String versionId, @PathVariable String recordType, @RequestBody Version version)
+            throws URISyntaxException {
+        // TODO: Request body is new entity, params represent old entity (to update)
+        return ResponseEntity
+                .created(new URI("/version/" + version.getId()))
+                .body(version);
+    }
+
+    @DeleteMapping("/version/{versionId}/{recordType}")
+    public ResponseEntity<Void> deleteVersion(@PathVariable String versionId, @PathVariable String recordType) {
+        // TODO: Implement deletion
+        return ResponseEntity
+                .ok()
+                .body(null);
     }
 }
