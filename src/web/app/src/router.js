@@ -87,6 +87,14 @@ export default new Router({
       component: () => import(/* webpackChunkName: "importData" */ './views/ImportData.vue')
     },
     {
+      path: '/data',
+      name: 'data',
+      meta: {
+        title: 'Data Management Page',
+      },
+      component: () => import(/* webpackChunkName: "importData" */ './views/ManageData.vue')
+    },
+    {
       path: '/',
       redirect: '/home'
     }
