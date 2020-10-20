@@ -7,7 +7,7 @@
     <el-divider></el-divider>
     <div class="infinite-list-wrapper">
       <el-card v-if="isPresentationListEmpty" >
-        <EmptyPresentation />
+        <EmptyPresentation v-on:createPresentationClick="createPresentation"/>
       </el-card>
       <ul class="infinite-list" v-infinite-scroll="loadMorePresentation" infinite-scroll-disabled="disabled" v-loading="isLoading">
         <li v-for="(presentation, index) in presentations" :key="presentation.id">
@@ -31,6 +31,19 @@
         </li>
       </ul>
     </div>
+    <el-dialog
+      title="Error"
+      :visible.sync="showNoDataAlert"
+      width="30%" center>
+      <span>There is no data to analyse yet! Please upload some data first.</span>
+      <span slot="footer" class="dialog-footer">
+        <el-button type="primary" v-on:click="() => { 
+            showNoDataAlert = false;
+            importData(); 
+          }">Upload</el-button>
+        <el-button type="primary-outline" v-on:click="() => { showNoDataAlert = false; }">Cancel</el-button>
+      </span>
+    </el-dialog>
   </el-main>
 </template>
 
@@ -46,8 +59,12 @@
     data() {
       return {
         show: false,
-        count: 0
+        count: 0,
+        showNoDataAlert: false,
       }
+    },
+    beforeCreate() {
+      this.$store.dispatch('getVersionList');
     },
     watch: {
       'isError'() {
@@ -80,6 +97,13 @@
       isError() {
         return this.$store.state.presentation.presentationListStatus.isApiError
       },
+      hasData: function() {
+        if (!this.$store.state.presentation.versionList) {
+          return false;
+        } else {
+          return this.$store.state.presentation.versionList.length > 0;
+        }
+      }
     },
     components: {
       ZoomCenterTransition,
@@ -87,7 +111,11 @@
     },
     methods: {
       createPresentation() {
-        this.$router.push("/analyze/create");
+        if (this.hasData) {
+          this.$router.push("/analyze/create");
+        } else {
+          this.showNoDataAlert = true;
+        }
       },
       loadPresentations() {
         this.show = true;
@@ -97,6 +125,9 @@
       },
       viewPresentation(id) {
         this.$router.push("/analyze/" + id);
+      },
+      importData() {
+        this.$router.push("/importData");
       }
     },
     mounted() {
