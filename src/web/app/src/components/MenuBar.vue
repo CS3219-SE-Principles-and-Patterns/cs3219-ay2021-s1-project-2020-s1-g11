@@ -1,6 +1,6 @@
 <template>
   <el-menu class="navbar" mode="horizontal" router>
-    <el-menu-item index="/home">
+    <el-menu-item class="chairvise-logo" index="/home">
       <img id="logo" alt="Chairvise logo" src="@/assets/logo.png"/>
       <span> Chairvise </span>
     </el-menu-item>
@@ -12,6 +12,10 @@
         <i class="el-icon-user-solid"></i> 
         <span class="hidden-sm-and-down">{{ userNickname }}</span>
       </template>
+      <el-menu-item index="/data" :disabled="!isLogin">
+        <i class="el-icon-files"></i>
+        My Data
+      </el-menu-item>
       <el-menu-item index="/analyze" :disabled="!isLogin">
         <i class="el-icon-data-analysis"></i>
         My Presentations
@@ -19,10 +23,6 @@
       <el-menu-item index="/conference" :disabled="!isLogin">
         <i class="el-icon-data-line"></i>
         My Conferences
-      </el-menu-item>
-      <el-menu-item index="/userGuide" :disabled="!isLogin">
-        <i class="el-icon-info"></i>
-        User Guide
       </el-menu-item>
       <el-menu-item index="/logout" v-if="isLogin" @click="logout"
                   v-loading.fullscreen.lock="isFullscreenLoading">
@@ -32,7 +32,11 @@
     </el-submenu>
     <el-menu-item class="login-button" index="/login" v-if="!isLogin" :disabled="isApiError" @click="login"
                   v-loading.fullscreen.lock="isFullscreenLoading">
-        Login
+      <i class="el-icon-user-solid"></i>
+      Login
+    </el-menu-item>
+    <el-menu-item class="user-guide-button" index="/userGuide" :disabled="isApiError">
+      User Guide
     </el-menu-item>
   </el-menu>
 </template>
@@ -85,6 +89,10 @@
   float: right;
 }
 
+.el-menu--horizontal > .user-guide-button {
+  float: right;
+}
+
 i.el-icon-user-solid {
   margin-right: 0.5rem;
 }
@@ -93,7 +101,7 @@ i.el-icon-user-solid {
   float: right;
 }
 
-.navbar > .el-menu-item.is-active {
+.navbar > .chairvise-logo.is-active {
     border-bottom: 0;
 }
 </style>

@@ -32,6 +32,6 @@ public class VersionDeserializer extends StdDeserializer<Version> {
         String recordType = getStrValueByField(node, "recordType");
         String version = getStrValueByField(node, "versionId");
 
-        return new Version(new Version.VersionPK(dataSet, recordType, version));
+        return new Version(new Version.VersionPk(dataSet, recordType, version));
     }
 }
