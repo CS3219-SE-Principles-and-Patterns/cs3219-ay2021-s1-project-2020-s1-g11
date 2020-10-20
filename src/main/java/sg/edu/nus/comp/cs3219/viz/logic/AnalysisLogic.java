@@ -55,7 +55,7 @@ public class AnalysisLogic {
     private String addVersionToNestedQuery(PresentationSection.Record record, String version){
         String regex = "(\\w+\\S).data_set";
         String strToMatch = record.getName();
-        strToMatch = strToMatch.replaceAll(regex, "$1.version = '" + version + "' AND $1.data_set" );
+        strToMatch = strToMatch.replaceAll(regex, "$1.version_id = '" + version + "' AND $1.data_set" );
         return strToMatch;
     }
 
@@ -82,7 +82,7 @@ public class AnalysisLogic {
 
         String dataSetVersionFilter = analysisRequest.getInvolvedRecords().stream()
                 .filter(r -> !r.isCustomized())
-                .map(t -> String.format("%s.data_set = '%s' AND %s.version = '%s'",
+                .map(t -> String.format("%s.data_set = '%s' AND %s.version_id = '%s'",
                         t.getName(), analysisRequest.getDataSet(),
                         t.getName(), analysisRequest.getVersionId()))
                 .collect(Collectors.joining(" AND "));
