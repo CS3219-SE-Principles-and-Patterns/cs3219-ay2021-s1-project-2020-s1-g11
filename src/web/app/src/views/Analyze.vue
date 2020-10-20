@@ -37,11 +37,11 @@
       width="30%" center>
       <span>There is no data to analyse yet! Please upload some data first.</span>
       <span slot="footer" class="dialog-footer">
+        <el-button type="primary-outline" v-on:click="() => { showNoDataAlert = false; }">Cancel</el-button>
         <el-button type="primary" v-on:click="() => { 
             showNoDataAlert = false;
             importData(); 
           }">Upload</el-button>
-        <el-button type="primary-outline" v-on:click="() => { showNoDataAlert = false; }">Cancel</el-button>
       </span>
     </el-dialog>
   </el-main>
