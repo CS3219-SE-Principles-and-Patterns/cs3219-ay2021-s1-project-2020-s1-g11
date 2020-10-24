@@ -8,7 +8,7 @@ import java.util.Date;
 import static org.junit.jupiter.api.Assertions.*;
 
 /**
- * SUT {@link ReviewRecord}
+ * SUT: {@link ReviewRecord}
  */
 class ReviewRecordTest {
 

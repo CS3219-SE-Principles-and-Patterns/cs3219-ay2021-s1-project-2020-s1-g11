@@ -11,7 +11,7 @@ import java.util.List;
 import static org.junit.jupiter.api.Assertions.*;
 
 /**
- * SUT {@link SubmissionRecord}
+ * SUT: {@link SubmissionRecord}
  */
 class SubmissionRecordTest {
 
