@@ -2,15 +2,6 @@
   <div>
     <div v-loading="isLoadingDBMetaData || isLoadingSectionList" v-if="!isNewPresentation">
       <el-aside width="300px" class="addRowRightAlign" v-if="isLogin">
-        <el-card v-if="!isSectionListEmpty" >
-          <div slot="header" class="clearfix">
-            <span> Select version </span>
-          </div>
-          <el-select class= "versionInput" v-model="presentationFormVersion" placeholder="Please select a version" >
-            <el-option v-for="v in versions" :key="v" :label="v" :value="v">
-            </el-option>
-          </el-select>        
-        </el-card>
         <el-card>  
           <div slot="header" class="clearfix">
             <span> Add section </span>
@@ -51,22 +42,22 @@
   import AbstractSectionDetail from "@/components/AbstractSectionDetail.vue"
   import {ID_NEW_PRESENTATION} from "@/common/const";
   import PredefinedQueries from "@/store/data/predefinedQueries"
+  import RequiredDataSets from "@/store/data/requiredDataSets"
   import EmptySection from "@/components/emptyStates/EmptySection.vue"
 
   export default {
     props: {
       presentationId: String,
+      presentationFormVersion: String,
+      versions: Array,
+      fileTypes: Array,
     },
     watch: {
       presentationId: 'fetchSectionList',
-      'presentationFormVersion'() {
-        this.updateVersion();
-      }
     },
     data() {
       return {
         selectedNewSection: '',
-        presentationFormVersion: ''
       }
     },
     computed: {
@@ -86,6 +77,9 @@
             continue;
           }
           let groupName = PredefinedQueries[key].group;
+          if (RequiredDataSets[groupName].some(x => !this.fileTypes.includes(x))) {
+            continue;
+          }
           if (sectionOptionsGroup[groupName] === undefined) {
             sectionOptionsGroup[groupName] = [];
           }
@@ -130,11 +124,6 @@
       },
       isLoadingDBMetaData() {
         return this.$store.state.dbMetaData.entitiesStatus.isLoading
-      },
-      versions() {
-        let list = Array.from(new Set(this.$store.state.dataManage.versionList.map(v => v.versionId)));
-        this.setDefaultValueForVersionList(list[0]);
-        return list;
       },
     },
     components: {
