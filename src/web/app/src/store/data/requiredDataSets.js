@@ -1,5 +1,5 @@
 export default {
-  "Co-authorship": ["AuthorRecord", "ReviewRecord", "SubmissionRecord"],
+  "Co-authorship": ["AuthorRecord", "SubmissionRecord"],
   "Submission Record": ["SubmissionRecord"],
   "Review Record": ["ReviewRecord"],
   "Author Record": ["AuthorRecord"],
