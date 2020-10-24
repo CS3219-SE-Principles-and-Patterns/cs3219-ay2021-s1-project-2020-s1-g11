@@ -33,19 +33,6 @@
                   {{ presentation.description !== "" ? presentation.description : "No description" }}
                 </el-col>
               </el-row>
-              <!-- <el-button type="text" class="presentationCard" v-show="show">
-                <el-row>
-                  <el-col class="presentation-id" :span="1">
-                    <p> #{{presentation.id}} </p>
-                  </el-col>
-                  <el-col :span="19" :offset="1">
-                    <p> {{ presentation.name }} </p>
-                  </el-col>
-                  <el-col :span="19" :offset="1">
-                    <p>{{ presentation.description }}</p>
-                  </el-col>
-                </el-row>
-              </el-button> -->
             </el-card>
           </zoom-center-transition>
         </li>
