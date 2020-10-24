@@ -176,11 +176,23 @@ public class RecordLogic {
     }
 
     @Transactional
-    public List <AuthorRecord> getAuthorRecordForDataSet(String dataSet) {
-        List <AuthorRecord> authorRecordList;
+    public List <AuthorRecord> getAuthorRecordForDataSet(String dataSet, String versionId) {
         Version versionToGet = new Version(new Version.VersionPk(dataSet, "AuthorRecord", versionId));
-        authorRecordRepository.findByVersionEquals(versionToGet);
+        List <AuthorRecord> authorRecordList = authorRecordRepository.findByVersionEquals(versionToGet);
+        return authorRecordList;
+    }
 
+    @Transactional
+    public List <ReviewRecord> getReviewRecordForDataSet(String dataSet, String versionId) {
+        Version versionToGet = new Version(new Version.VersionPk(dataSet, "ReviewRecord", versionId));
+        List <ReviewRecord> reviewRecordList = reviewRecordRepository.findByVersionEquals(versionToGet);
+        return reviewRecordList;
+    }
 
+    @Transactional
+    public List <SubmissionRecord> getSubmissionRecordForDataSet(String dataSet, String versionId) {
+        Version versionToGet = new Version(new Version.VersionPk(dataSet, "SubmissionRecord", versionId));
+        List <SubmissionRecord> submissionRecordList = submissionRecordRepository.findByVersionEquals(versionToGet);
+        return submissionRecordList;
     }
 }
