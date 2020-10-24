@@ -302,7 +302,8 @@
           skipEmptyLines: true,
           complete: fileParser.parser.bind(this)
         });
-      }
+
+        this.showMappingTool = true}
     },
     components: {
       MappingTool

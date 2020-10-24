@@ -28,6 +28,7 @@ export default {
           tableType: idx,
           hasHeader: false,
           uploadedData: [],
+          uploadedRaw: [],
           uploadedLabel: [],
           mappingResult: [],
           processedResult: [],
@@ -82,9 +83,10 @@ export default {
       state.isUploadSuccess = success;
     },
 
-    setUploadedFile(state, data) {
+    setUploadedFile(state, {data, raw}) {
       state.data.records[state.data.currentRecordIndex].uploadedLabel = data[0];
       state.data.records[state.data.currentRecordIndex].uploadedData = data;
+      state.data.records[state.data.currentRecordIndex].uploadedRaw = raw;
       state.data.records[state.data.currentRecordIndex].fileUploaded = true;
     },
 
