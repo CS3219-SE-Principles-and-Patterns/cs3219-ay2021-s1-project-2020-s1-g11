@@ -54,11 +54,17 @@
                 </el-option>
               </el-select>
               <span v-if="!isInEditMode">
-                <el-tag v-for="t in fileTypes" :key="t" type="warning" class="record-tag">{{t}}</el-tag>
+                <el-tag v-for="t in fileTypes" :key="t" type="warning" class="access-tag">{{t}}</el-tag>
               </span>
             </el-form-item>
             <el-form-item label="Access Control: " v-if="!isNewPresentation">
               <el-tag>Created by {{ presentationForm.creatorIdentifier }}</el-tag>
+              <el-tag v-if="publicAccessLevel() !== 'OFF'" type="success" class="access-tag">
+                {{publicAccessLevel() === "CAN_READ" ? "Anyone can View" : "Anyone can Edit"}}
+              </el-tag>
+              <el-tag v-for="item in accessControlList()" :key="item" type="success" class="access-tag">
+                {{item.userIdentifier}} can {{item.accessLevel === "CAN_READ" ? "View" : "Edit"}}
+              </el-tag>
             </el-form-item>
             <el-form-item label="Description: ">
               <div v-if="!isInEditMode" id="presentation-description">{{ presentationForm.description === '' ? 'No description' : presentationForm.description }}</div>
@@ -316,7 +322,22 @@
             vm.$store.commit('setPageLoadingStatus', false);
           });
         });
-      }
+      },
+      fetchAccessControlList() {
+        this.$store.dispatch('fetchAccessControlList', this.presentation.presentationForm.id)
+      },
+      publicAccessLevel() {
+        let publicAccessLevelControl =
+          this.$store.state.accessControl.accessControlList.find(ac => ac.userIdentifier === SPECIAL_IDENTIFIER_PUBLIC);
+        if (publicAccessLevelControl === undefined) {
+          return 'OFF'
+        }
+        return publicAccessLevelControl.accessLevel
+      },
+      accessControlList() {
+        return this.$store.state.accessControl.accessControlList
+          .filter(ac => ac.userIdentifier !== SPECIAL_IDENTIFIER_PUBLIC)
+      },
     },
 
     components: {
@@ -372,7 +393,7 @@
   .el-dropdown {
     margin-right: 6px;
   }
-  .record-tag {
-    margin: 0 4px;
+  .access-tag {
+    margin-left: 8px;
   }
 </style>
