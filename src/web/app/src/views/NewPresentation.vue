@@ -80,7 +80,7 @@
                 return this.$store.state.presentation.presentationForm.creatorIdentifier
             },
             versions() {
-                let list = Array.from(new Set(this.$store.state.presentation.versionList.map(v => v.versionId)));
+                let list = Array.from(new Set(this.$store.state.dataManage.versionList.map(v => v.versionId)));
                 return list;
             },
             presentationFormName: {
