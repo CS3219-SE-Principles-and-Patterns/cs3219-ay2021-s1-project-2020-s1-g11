@@ -84,7 +84,7 @@
                 return this.presentationId === ID_NEW_PRESENTATION
             },
             versions() {
-                let list = Array.from(new Set(this.$store.state.presentation.versionList.map(v => v.versionId)));
+                let list = Array.from(new Set(this.$store.state.dataManage.versionList.map(v => v.versionId)));
                 return list;
             },
             presentationFormVersion: {
@@ -137,7 +137,7 @@
                 this.presentationFormVersion = e;
             },
             getFileTypes(versionId) {
-                return this.$store.state.presentation.versionList.filter(v => v.versionId === versionId).map(v => v.recordType);
+                return this.$store.state.dataManage.versionList.filter(v => v.versionId === versionId).map(v => v.recordType);
             },
         }
     }

@@ -121,11 +121,7 @@
         return this.$store.state.presentation.presentationListStatus.isApiError
       },
       hasData: function() {
-        if (!this.$store.state.presentation.versionList) {
-          return false;
-        } else {
-          return this.$store.state.presentation.versionList.length > 0;
-        }
+        return this.$store.state.dataManage.versionList.length > 0;
       }
     },
     components: {
