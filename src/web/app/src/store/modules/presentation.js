@@ -4,7 +4,6 @@ import {deepCopy} from "@/common/utility"
 export default {
   state: {
     presentationList: [],
-    versionList: [],
     presentationListStatus: {
       isLoading: true,
       isApiError: false,
@@ -41,10 +40,6 @@ export default {
 
     setPresentationList(state, payload) {
       state.presentationList = payload;
-    },
-
-    setVersionList(state, payload) {
-      state.versionList = payload;
     },
 
     addToPresentationList(state, payload) {
@@ -113,20 +108,6 @@ export default {
         .finally(() => {
           commit('setPresentationListLoading', false);
         })
-    },
-
-    async getVersionList({commit}) {
-      commit('setPresentationListLoading', true);
-      axios.get('/api/version')
-          .then(response => {
-            commit('setVersionList', response.data)
-          })
-          .catch(e => {
-            commit('setPresentationListApiError', e.toString());
-          })
-          .finally(() => {
-            commit('setPresentationListLoading', false);
-          })
     },
 
     async getPresentation({commit}, presentationId) {
