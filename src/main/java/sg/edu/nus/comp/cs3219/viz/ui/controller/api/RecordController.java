@@ -128,17 +128,44 @@ public class RecordController extends BaseRestController {
     }
 
     /**
-     * Gets all records for the current user.
-     * @return List<AuthorRecord>, List<ReviewRecord>, List<SubmissionRecord>
+     * Gets the AuthorRecord of a given version for the current user.
+     * @return ResponseEntity<?>
      * @throws URISyntaxException
      */
     @GetMapping("/record/author/{versionId}")
     public ResponseEntity<?> getAuthorRecords(@PathVariable String versionId) {
         UserInfo userInfo = gateKeeper.verifyLoginAccess();
 
-        // TODO: check that new_versionId is not already in the repository
-        AuthorRecord authorRecord = new AuthorRecord();
+        List<AuthorRecord> authorRecord = this.recordLogic.getAuthorRecordForDataSet(userInfo.getUserEmail(), versionId);
 
         return ResponseEntity.ok().body(authorRecord);
+    }
+
+    /**
+     * Gets the ReviewRecord of a given version for the current user.
+     * @return ResponseEntity<?>
+     * @throws URISyntaxException
+     */
+    @GetMapping("/record/review/{versionId}")
+    public ResponseEntity<?> getReviewRecords(@PathVariable String versionId) {
+        UserInfo userInfo = gateKeeper.verifyLoginAccess();
+
+        List<ReviewRecord> reviewRecord = this.recordLogic.getReviewRecordForDataSet(userInfo.getUserEmail(), versionId);
+
+        return ResponseEntity.ok().body(reviewRecord);
+    }
+
+    /**
+     * Gets the SubmissionRecord of a given version for the current user.
+     * @return ResponseEntity<?>
+     * @throws URISyntaxException
+     */
+    @GetMapping("/record/submission/{versionId}")
+    public ResponseEntity<?> getSubmissionRecord(@PathVariable String versionId) {
+        UserInfo userInfo = gateKeeper.verifyLoginAccess();
+
+        List<SubmissionRecord> submissionRecord = this.recordLogic.getSubmissionRecordForDataSet(userInfo.getUserEmail(), versionId);
+
+        return ResponseEntity.ok().body(submissionRecord);
     }
 }
