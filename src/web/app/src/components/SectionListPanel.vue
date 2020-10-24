@@ -125,6 +125,11 @@
       isLoadingDBMetaData() {
         return this.$store.state.dbMetaData.entitiesStatus.isLoading
       },
+      versions() {
+        let list = Array.from(new Set(this.$store.state.dataManage.versionList.map(v => v.versionId)));
+        this.setDefaultValueForVersionList(list[0]);
+        return list;
+      },
     },
     components: {
       AbstractSectionDetail,
