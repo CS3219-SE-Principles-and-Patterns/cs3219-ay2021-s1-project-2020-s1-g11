@@ -121,7 +121,6 @@ public class RecordController extends BaseRestController {
     public ResponseEntity<?> editVersionId(@PathVariable String old_versionId, @RequestBody String new_versionId) throws URISyntaxException {
         UserInfo userInfo = gateKeeper.verifyLoginAccess();
 
-        // TODO: check that new_versionId is not already in the repository
         this.recordLogic.editVersionId(userInfo.getUserEmail(), old_versionId, new_versionId);
 
         return ResponseEntity.ok().build();
