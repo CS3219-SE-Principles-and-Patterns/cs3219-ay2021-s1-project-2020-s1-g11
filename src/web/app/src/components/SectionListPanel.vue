@@ -2,7 +2,7 @@
   <div>
     <div v-loading="isLoadingDBMetaData || isLoadingSectionList" v-if="!isNewPresentation">
       <el-aside width="300px" class="addRowRightAlign" v-if="isLogin">
-        <el-card>  
+        <el-card class="floating">  
           <div slot="header" class="clearfix">
             <span> Add section </span>
           </div>
@@ -204,5 +204,13 @@
   }
   .addRowRightAlign .el-card{
     margin-bottom: 16px;
+  }
+  .floating {
+    position: fixed;
+    bottom: 20px;
+    margin-right: 40px;
+  }
+  .el-aside {
+    height: 10px;
   }
 </style>
