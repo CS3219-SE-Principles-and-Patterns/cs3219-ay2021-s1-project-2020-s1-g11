@@ -59,9 +59,10 @@ public class VersionController extends BaseRestController{
      * @return
      * @throws URISyntaxException
      */
+    // Keep file but change ID.
     @PutMapping("/version/{versionId}/{recordType}")
     public ResponseEntity<?> updateVersion(
-            @PathVariable String versionId, @PathVariable String recordType, @RequestBody Version version)
+            @PathVariable String versionId, @RequestBody Version version)
             throws URISyntaxException {
         // TODO: Request body is new entity, params represent old entity (to update)
         return ResponseEntity
