@@ -33,22 +33,12 @@
 
         <!-- dialogs -->
         <el-dialog
-        title="Confirm"
-        :visible.sync="hasSubmitted"
-        width="30%" center>
-            <span> Are you sure that the presentation details are correct?</span>
-            <span slot="footer" class="dialog-footer">
-                <el-button v-on:click="hasSubmitted = false">Cancel</el-button>
-                <el-button type="primary" v-on:click="addPresentation">Confirm</el-button>
-            </span>
-        </el-dialog>
-        <el-dialog
         title="Success"
         :visible.sync="saveSuccess"
         width="30%" center>
-            <span>You have successfully added a new presentation</span>
+            <span>You have successfully added a new presentation!</span>
             <span slot="footer" class="dialog-footer">
-                <el-button type="primary" v-on:click="closeSuccess">Sure</el-button>
+                <el-button type="primary" v-on:click="closeSuccess">OK</el-button>
             </span>
         </el-dialog>
         <!-- end of dialogs -->
@@ -212,7 +202,7 @@
                         return
                     }
                     this.$refs['presentationForm'].clearValidate();
-                    this.hasSubmitted = true;
+                    this.addPresentation();
                 });
             },
             closeSuccess() {

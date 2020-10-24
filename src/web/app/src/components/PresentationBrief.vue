@@ -1,8 +1,37 @@
 <template>
   <div>
     <el-card class="details-card">
-      <div slot="header" class="clearfix">
-        <span> Presentation Details </span>
+      <div slot="header" class="clearfix brief-header">
+        <span class="brief-title"> Presentation Details </span>
+        <span class="brief-title">
+          <el-dropdown @command="download">
+            <el-button type="warning">
+              Download<i class="el-icon-arrow-down el-icon--right"></i>
+            </el-button>
+            <el-dropdown-menu slot="dropdown">
+              <el-dropdown-item icon="el-icon-document" command="PDF">PDF</el-dropdown-item>
+              <el-dropdown-item icon="el-icon-data-board" command="PPTX">Powerpoint</el-dropdown-item>
+            </el-dropdown-menu>
+          </el-dropdown>
+          <el-button-group v-if="isLogin && isPresentationEditable">
+            <el-button type="primary" @click="changeEditMode(true)" icon="el-icon-edit"
+                    :disabled="isInEditMode">
+              Edit
+            </el-button>
+            <el-button type="success" icon="el-icon-share"
+                    @click="openAccessControlPanel()">
+              Share
+            </el-button>
+            <el-button type="danger" v-if="!isNewPresentation"
+                    icon="el-icon-delete" @click="() => { showDeleteDialog = true; }">
+              Delete
+            </el-button>
+          </el-button-group>
+          <el-button type="primary" @click="changeEditMode(true)" icon="el-icon-edit"
+                    v-else-if="isPresentationEditable" :disabled="isInEditMode">
+            Edit
+          </el-button>
+        </span>
       </div>
       <el-row>
         <el-col :span="18">
@@ -10,7 +39,6 @@
                   label-width="150px" :rules="rules"
                   :model="presentationForm" v-loading="isLoading" >
             <el-alert v-if="isError" :title="apiErrorMsg" type="error" show-icon class="errorMsg"/>
-
             <el-form-item label="Name: " v-show="isInEditMode" :prop=" 'name' " >
               <div v-if="!isInEditMode">{{ presentationForm.name }}</div>
               <el-input v-model="presentationFormName" v-if="isInEditMode"/>
@@ -30,7 +58,7 @@
               <el-tag>Created by {{ presentationForm.creatorIdentifier }}</el-tag>
             </el-form-item>
             <el-form-item label="Description: ">
-              <div v-if="!isInEditMode" id="presentation-description">{{ presentationForm.description }}</div>
+              <div v-if="!isInEditMode" id="presentation-description">{{ presentationForm.description === '' ? 'No description' : presentationForm.description }}</div>
               <el-input type="textarea" autosize v-model="presentationFormDescription" v-if="isInEditMode"/>
             </el-form-item>
             <el-form-item v-if="isInEditMode">
@@ -42,40 +70,21 @@
           </el-form>
         </el-col>
       </el-row>
-      <el-divider v-if="!isInEditMode"></el-divider>
-      <el-row v-if="!isInEditMode">
-        <el-col class="download-section" :span="12">
-          <el-button-group>
-            <el-button type="primary" @click="downloadPDF()" v-if="!isInEditMode && !isNewPresentation"
-              icon="el-icon-document">
-                PDF
-            </el-button>
-            <el-button type="danger" @click="downloadPPTX()" v-if="!isInEditMode && !isNewPresentation"
-              icon="el-icon-data-board">
-                Powerpoint
-            </el-button>
-          </el-button-group>
-        </el-col>
-        <el-col class="options-section" :span="12">
-          <el-divider direction="vertical" class="v-divide"></el-divider>
-          <el-button-group>
-            <el-button type="success" class="share_button_left_margin" icon="el-icon-share"
-                    @click="openAccessControlPanel()" v-if="isLogin && isPresentationEditable">
-              Share
-            </el-button>
-            <el-button type="primary" @click="changeEditMode(true)" icon="el-icon-edit"
-                    v-if="!isInEditMode && isPresentationEditable">
-              Edit
-            </el-button>
-            <el-button type="danger" v-if="!isNewPresentation && isLogin && isPresentationEditable"
-                    icon="el-icon-delete" @click="deletePresentation()">
-              Delete
-            </el-button>
-          </el-button-group>
-        </el-col>
-      </el-row>
     </el-card>
 
+    <el-dialog
+      title="Warning"
+      :visible.sync="showDeleteDialog"
+      width="30%" center>
+      <span>Are you sure you want to delete the presentation? This action cannot be undone.</span>
+      <span slot="footer" class="dialog-footer">  
+        <el-button type="primary-outline" v-on:click="() => { showDeleteDialog = false; }">Cancel</el-button>
+        <el-button type="danger" v-on:click="() => { 
+            showNoDataAlert = false;
+            deletePresentation(); 
+          }">Delete</el-button>
+      </span>
+    </el-dialog>
     <el-dialog title="Share with other users:" :visible.sync="isAccessControlDialogVisible" width="70%"
             :close-on-click-modal="false">
       <access-control-panel :presentationId="id"></access-control-panel>
@@ -176,7 +185,8 @@
           dataset: [
             {required: true, message: 'Please select a data set!', trigger: 'blur'},
           ],
-        }
+        },
+        showDeleteDialog: false,
       }
     },
     methods: {
@@ -268,6 +278,13 @@
                   })
         }
       },
+      download(e) {
+        if (e === "PDF") {
+          this.downloadPDF();
+        } else {
+          this.downloadPPTX();
+        }
+      },
       downloadPDF() {
         window.scrollTo(0, 0)
         let vm = this;
@@ -339,5 +356,16 @@
   }
   .el-select {
       display: block;
+  }
+  .brief-header {
+    display: flex;
+    justify-content: space-between;
+  }
+  .brief-title {
+    display: inline-flex;
+    align-items: center;
+  }
+  .el-dropdown {
+    margin-right: 6px;
   }
 </style>
