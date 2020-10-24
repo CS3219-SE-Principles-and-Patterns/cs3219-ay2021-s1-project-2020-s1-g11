@@ -64,7 +64,7 @@
 
 <script>
 import EmptyData from "@/components/emptyStates/EmptyData";
-import { ZoomCenterTransition } from 'vue2-transitions'
+import {ZoomCenterTransition} from 'vue2-transitions'
 
 export default {
   name: "ManageData",
@@ -93,8 +93,7 @@ export default {
       return this.versions.length <= 0;
     },
     versions() {
-      let list = Array.from(new Set(this.$store.state.presentation.versionList.map(v => v.versionId)));
-      return list;
+      return Array.from(new Set(this.$store.state.dataManage.versionList.map(v => v.versionId)));
     },
     conferenceName: {
       get() {
@@ -127,8 +126,9 @@ export default {
       this.$router.push("/importData");
     },
     getFileTypes(versionId) {
-      return this.$store.state.presentation.versionList.filter(v => v.versionId === versionId).map(v => v.recordType);
+      return this.$store.state.dataManage.versionList.filter(v => v.versionId === versionId).map(v => v.recordType);
     },
+    /* eslint-disable no-console */
     saveNewVersionId(oldVersionId, newVersionId) {
       console.log(oldVersionId, newVersionId);
       // TODO
@@ -146,6 +146,7 @@ export default {
       console.log(versionId, recordType);
       // TODO
     },
+    /* eslint-enable no-console */
   }
 }
 </script>
