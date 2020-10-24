@@ -2,8 +2,8 @@ package sg.edu.nus.comp.cs3219.viz.test;
 
 import org.json.JSONException;
 import org.json.JSONObject;
-import org.junit.AfterClass;
-import org.junit.BeforeClass;
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.BeforeAll;
 
 import java.io.IOException;
 
@@ -21,15 +21,15 @@ public class BaseComponentTest {
     }
 
     private String getTestDataFolder() {
-        return "src/test/resources/data";
+        return "src/test/resources/data/";
     }
 
-    @BeforeClass
+    @BeforeAll
     public static void setUpGae() {
         gaeSimulation.setUp();
     }
 
-    @AfterClass
+    @AfterAll
     public static void tearDownGae() {
         gaeSimulation.tearDown();
     }
