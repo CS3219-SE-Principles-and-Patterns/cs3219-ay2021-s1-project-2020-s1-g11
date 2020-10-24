@@ -59,11 +59,12 @@ export default {
             })
         },
         async updateVersion({commit}, payload) {
-            axios.put('/api/version/' + payload[0], payload[1]).then(() => {
-                axios.put('/api/record/' + payload[0], payload[1]).then(() => {
-                    axios.get('/api/version').then(response => {
-                        commit('setVersionList', response.data)
-                    })
+            await axios.all([
+                axios.put('/api/version/' + payload[0], payload[1]),
+                axios.put('/api/record/' + payload[0], payload[1])
+            ]).then(() => {
+                axios.get('/api/version').then(response => {
+                    commit('setVersionList', response.data)
                 })
             })
         },
