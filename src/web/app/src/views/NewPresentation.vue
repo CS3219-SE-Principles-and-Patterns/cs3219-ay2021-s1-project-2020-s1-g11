@@ -8,7 +8,6 @@
                     class="errorMsg"/>
             <el-form v-else :rules="rules" ref="presentationForm"
                     :model="presentationForm" v-loading="isLoading">
-
                 <el-form-item label="Name" :prop="'name'" >
                     <el-col>
                         <el-input v-model="presentationFormName" placeholder="Enter name"/>

@@ -2,8 +2,17 @@
     <el-main>
         <el-container>
             <el-main>
-                <presentation-brief :id="id"/>
-                <section-list-panel :presentationId="id"/>
+                <presentation-brief 
+                    :id="id" 
+                    :version="presentationFormVersion" 
+                    :versions="versions"
+                    v-on:version-change="e => handleVersionChange(e)"
+                />
+                <section-list-panel 
+                    :presentationId="id" 
+                    :presentationFormVersion="presentationFormVersion" 
+                    :versions="versions"
+                />
             </el-main>
         </el-container>
     </el-main>
@@ -26,6 +35,9 @@
                 selectedNewSection: '',
                 presentationId: '',
             }
+        },
+        beforeCreate() {
+            this.$store.dispatch('getVersionList');
         },
         computed: {
             isLogin() {
@@ -66,11 +78,24 @@
                 }
                 return sectionOptions;
             },
-
             isNewPresentation() {
                 return this.presentationId === ID_NEW_PRESENTATION
             },
-
+            versions() {
+                let list = Array.from(new Set(this.$store.state.presentation.versionList.map(v => v.versionId)));
+                return list;
+            },
+            presentationFormVersion: {
+                get() {
+                    return this.$store.state.presentation.presentationForm.version;
+                },
+                set(value) {
+                    this.$store.commit('setPresentationFormField', {
+                        field: 'version',
+                        value
+                    });
+                }
+            },
             sectionList() {
                 return this.$store.state.section.sectionList
             },
@@ -105,6 +130,9 @@
                 } else {
                     this.$store.dispatch('fetchSectionList', this.presentationId)
                 }
+            },
+            handleVersionChange(e) {
+                this.presentationFormVersion = e;
             },
         }
     }

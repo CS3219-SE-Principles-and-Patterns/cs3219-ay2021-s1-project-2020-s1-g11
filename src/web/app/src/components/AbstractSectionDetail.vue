@@ -1,6 +1,6 @@
 <template>
   <el-row class="sectionDetail">
-    <div v-if="version !== undefined && typeof version != 'undefined'">
+    <div v-if="version !== undefined && typeof version !== 'undefined' && version !== ''">
       <div v-if="sectionDetail.type === WORD_CLOUD">
         <word-cloud-section-detail :sectionDetail="sectionDetail" :presentationId="presentationId" :version="version"/>
       </div>

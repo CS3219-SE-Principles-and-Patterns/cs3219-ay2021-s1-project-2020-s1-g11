@@ -19,6 +19,13 @@
               <div v-if="!isInEditMode">{{ presentationForm.name }}</div>
               <el-input v-model="presentationFormName" v-if="isInEditMode"/>
             </el-form-item>
+            <el-form-item label="Data Set: " :prop="isInEditMode ? 'dataset' : ''">
+              <div v-if="!isInEditMode">{{ version }}</div>
+              <el-select v-if="isInEditMode" class= "versionInput" :value="version" v-on:change="e => $emit('version-change', e)" placeholder="Please select a version" >
+                <el-option v-for="v in versions" :key="v" :label="v" :value="v">
+                </el-option>
+              </el-select>
+            </el-form-item>
             <el-form-item label="Access Control: " v-if="!isNewPresentation">
               <el-tag>Created by {{ presentationForm.creatorIdentifier }}</el-tag>
             </el-form-item>
@@ -86,7 +93,12 @@
   export default {
     name: 'PresentationBrief',
     props: {
-      id: String
+      id: String,
+      version: String,
+      versions: Array,
+    },
+    beforeCreate() {
+        this.$store.dispatch('getVersionList');
     },
     mounted() {
       this.updatePresentationForm();
@@ -158,9 +170,12 @@
         isAccessControlDialogVisible: false,
         rules: {
           name: [
-            {required: true, message: 'Please enter presentation name', trigger: 'blur'},
-            {min: 3, message: 'The length should be more than 3 character', trigger: 'blur'}
-          ]
+            {required: true, message: 'Please enter presentation name!', trigger: 'blur'},
+            {min: 3, message: 'The length should be more than 3 character!', trigger: 'blur'}
+          ],
+          dataset: [
+            {required: true, message: 'Please select a data set!', trigger: 'blur'},
+          ],
         }
       }
     },
@@ -321,5 +336,8 @@
     float: left;
     height: 6rem;
     margin-top: -1.5rem;
+  }
+  .el-select {
+      display: block;
   }
 </style>
