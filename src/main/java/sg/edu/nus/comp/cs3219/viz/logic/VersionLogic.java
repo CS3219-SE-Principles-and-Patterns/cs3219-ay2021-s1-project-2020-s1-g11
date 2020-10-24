@@ -43,7 +43,7 @@ public class VersionLogic {
         return versionRepository.save(newVersion);
     }
 
-    public Boolean editVersionId(String dataSet, String old_versionId, String new_versionId) {)
+    public Boolean editVersionId(String dataSet, String old_versionId, String new_versionId) {
         Version.VersionPk new_versionPk = new Version.VersionPk();
         new_versionPk.setVersionId(new_versionId);
         new_versionPk.setDataSet(dataSet);
