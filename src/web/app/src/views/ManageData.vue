@@ -128,25 +128,28 @@ export default {
     getFileTypes(versionId) {
       return this.$store.state.dataManage.versionList.filter(v => v.versionId === versionId).map(v => v.recordType);
     },
-    /* eslint-disable no-console */
     saveNewVersionId(oldVersionId, newVersionId) {
-      console.log(oldVersionId, newVersionId);
-      // TODO
       this.editingVersion = ""
+      return this.$store.dispatch("updateVersion", [oldVersionId, newVersionId]);
     },
     deleteRecord(versionId, recordType) {
-      console.log(versionId, recordType);
-      // TODO
+      switch (recordType) {
+        case 'AuthorRecord':
+          return this.$store.dispatch("deleteAuthorRecord", versionId);
+        case 'ReviewRecord':
+          return this.$store.dispatch("deleteReviewRecord", versionId);
+        case 'SubmissionRecord':
+          return this.$store.dispatch("deleteSubmissionRecord", versionId);
+      }
     },
     deleteAllRecords(versionId) {
-      console.log(versionId);
-      // TODO
+      return this.$store.dispatch("deleteVersion", versionId);
     },
+    /* eslint-disable no-unused-vars */
     uploadRecord(versionId, recordType) {
-      console.log(versionId, recordType);
-      // TODO
-    },
-    /* eslint-enable no-console */
+      // TODO: Wait for mapping to be done
+    }
+    /* eslint-enable no-unused-vars */
   }
 }
 </script>
