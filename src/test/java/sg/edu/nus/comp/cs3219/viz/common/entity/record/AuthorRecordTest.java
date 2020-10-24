@@ -34,9 +34,10 @@ class AuthorRecordTest {
 
     @Test
     void get_set_SubmissionId() {
+        String test = "test";
         assertNull(record.getSubmissionId());
-        record.setSubmissionId("submission_id");
-        assertEquals("submission_id", record.getSubmissionId());
+        record.setSubmissionId(test);
+        assertEquals(test, record.getSubmissionId());
     }
 
     @Test
