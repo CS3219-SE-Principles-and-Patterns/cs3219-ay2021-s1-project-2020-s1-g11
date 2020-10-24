@@ -80,7 +80,7 @@
       <span slot="footer" class="dialog-footer">  
         <el-button type="primary-outline" v-on:click="() => { showDeleteDialog = false; }">Cancel</el-button>
         <el-button type="danger" v-on:click="() => { 
-            showNoDataAlert = false;
+            showDeleteDialog = false;
             deletePresentation(); 
           }">Delete</el-button>
       </span>
