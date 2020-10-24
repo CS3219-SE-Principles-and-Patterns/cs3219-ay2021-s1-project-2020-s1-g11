@@ -48,11 +48,14 @@
               <el-input v-model="presentationFormName" v-if="isInEditMode"/>
             </el-form-item>
             <el-form-item label="Data Set: " :prop="isInEditMode ? 'dataset' : ''">
-              <div v-if="!isInEditMode">{{ version }}</div>
-              <el-select v-if="isInEditMode" class= "versionInput" :value="version" v-on:change="e => $emit('version-change', e)" placeholder="Please select a version" >
+              <span v-if="!isInEditMode">{{ version }}</span>
+              <el-select v-if="isInEditMode" :value="version" v-on:change="e => $emit('version-change', e)" placeholder="Please select a version" >
                 <el-option v-for="v in versions" :key="v" :label="v" :value="v">
                 </el-option>
               </el-select>
+              <span v-if="!isInEditMode">
+                <el-tag v-for="t in fileTypes" :key="t" type="warning" class="record-tag">{{t}}</el-tag>
+              </span>
             </el-form-item>
             <el-form-item label="Access Control: " v-if="!isNewPresentation">
               <el-tag>Created by {{ presentationForm.creatorIdentifier }}</el-tag>
@@ -105,6 +108,7 @@
       id: String,
       version: String,
       versions: Array,
+      fileTypes: Array,
     },
     beforeCreate() {
         this.$store.dispatch('getVersionList');
@@ -367,5 +371,8 @@
   }
   .el-dropdown {
     margin-right: 6px;
+  }
+  .record-tag {
+    margin: 0 4px;
   }
 </style>

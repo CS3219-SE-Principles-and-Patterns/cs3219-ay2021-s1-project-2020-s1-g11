@@ -42,6 +42,7 @@
   import AbstractSectionDetail from "@/components/AbstractSectionDetail.vue"
   import {ID_NEW_PRESENTATION} from "@/common/const";
   import PredefinedQueries from "@/store/data/predefinedQueries"
+  import RequiredDataSets from "@/store/data/requiredDataSets"
   import EmptySection from "@/components/emptyStates/EmptySection.vue"
 
   export default {
@@ -49,6 +50,7 @@
       presentationId: String,
       presentationFormVersion: String,
       versions: Array,
+      fileTypes: Array,
     },
     watch: {
       presentationId: 'fetchSectionList',
@@ -75,6 +77,9 @@
             continue;
           }
           let groupName = PredefinedQueries[key].group;
+          if (RequiredDataSets[groupName].some(x => !this.fileTypes.includes(x))) {
+            continue;
+          }
           if (sectionOptionsGroup[groupName] === undefined) {
             sectionOptionsGroup[groupName] = [];
           }

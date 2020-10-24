@@ -6,12 +6,14 @@
                     :id="id" 
                     :version="presentationFormVersion" 
                     :versions="versions"
+                    :fileTypes="getFileTypes(presentationFormVersion)"
                     v-on:version-change="e => handleVersionChange(e)"
                 />
                 <section-list-panel 
                     :presentationId="id" 
                     :presentationFormVersion="presentationFormVersion" 
                     :versions="versions"
+                    :fileTypes="getFileTypes(presentationFormVersion)"
                 />
             </el-main>
         </el-container>
@@ -133,6 +135,9 @@
             },
             handleVersionChange(e) {
                 this.presentationFormVersion = e;
+            },
+            getFileTypes(versionId) {
+                return this.$store.state.presentation.versionList.filter(v => v.versionId === versionId).map(v => v.recordType);
             },
         }
     }
