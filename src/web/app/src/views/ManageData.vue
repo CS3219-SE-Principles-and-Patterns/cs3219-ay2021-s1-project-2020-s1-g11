@@ -25,7 +25,7 @@
                 <el-input v-if="version === editingVersion" v-model="conferenceYear" placeholder="Year" class="card-title"></el-input>
               </span>
               <span class="card-title">
-                <el-dropdown @command="download">
+                <el-dropdown @command="command => uploadRecord(version, command)">
                   <el-button type="success" :disabled="allRecords.filter(x => !getFileTypes(version).includes(x)).length === 0">
                     Upload<i class="el-icon-arrow-down el-icon--right"></i>
                   </el-button>
@@ -141,7 +141,11 @@ export default {
     deleteAllRecords(versionId) {
       console.log(versionId);
       // TODO
-    }
+    },
+    uploadRecord(versionId, recordType) {
+      console.log(versionId, recordType);
+      // TODO
+    },
   }
 }
 </script>
