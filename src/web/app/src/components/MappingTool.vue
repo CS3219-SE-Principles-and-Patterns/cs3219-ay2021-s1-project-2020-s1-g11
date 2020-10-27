@@ -41,14 +41,14 @@
         <!-- db fields -->
         <div class="db-tags">
           <h3>Mapping function</h3>
-          <textarea v-model="mapFunctionRaw">
+          <textarea v-model="mapFunctionRaw" rows="25" cols="50">
           </textarea>
           <div v-html="mapFunctionRaw"></div>
           <el-button @click="updateMapFunction"></el-button>
         </div>
         <!-- end of db fields -->
 
-        <!-- imported tags -->
+        <!-- imported tags
         <div class="import-tags">
           <h3>Imported data fields</h3>
           <transition-group name="tags-group" tag="div">
@@ -60,7 +60,7 @@
             </div>
           </transition-group>
         </div>
-        <!-- end of imported tags -->
+         end of imported tags -->
 
         <!-- button group -->
         <el-row class="button-row">
