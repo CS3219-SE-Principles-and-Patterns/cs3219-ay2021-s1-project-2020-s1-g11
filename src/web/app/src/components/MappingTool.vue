@@ -85,7 +85,6 @@ export default {
   name: "MappingTool",
   data() {
     return {
-      currentMappingType: 0,
       mapFunction: x => x,
       mapFunctionRaw: '',
       uploadedData: this.$store.state.dataMapping.data.records[this.$store.state.dataMapping.data.currentRecordIndex].uploadedData,
@@ -149,6 +148,11 @@ export default {
     currentRecordIndex() {
       this.mappedDBTag = [];
       this.mappedImportTag = [];
+
+      if (localStorage.mapFunctionRaw) {
+        const obj = JSON.parse(localStorage.mapFunctionRaw);
+        this.mapFunctionRaw = obj[this.currentRecordIndex]
+      }
     },
     errors(newValue) {
       if (newValue.length > 0) {
@@ -157,6 +161,15 @@ export default {
           message: newValue.join("\n")
         });
       }
+    },
+    mapFunctionRaw(mapFunctionRaw) {
+      if (localStorage.mapFunctionRaw) {
+        const obj = JSON.parse(localStorage.mapFunctionRaw);
+        obj[this.currentRecordIndex] = mapFunctionRaw
+        localStorage.mapFunctionRaw = JSON.stringify(obj)
+      }
+      else
+        localStorage.mapFunctionRaw = JSON.stringify(["", "", ""])
     }
   },
   methods: {
@@ -220,6 +233,12 @@ export default {
     },
   },
   mounted() {
+    if (localStorage.mapFunctionRaw) {
+      const obj = JSON.parse(localStorage.mapFunctionRaw);
+      this.mapFunctionRaw = obj[this.currentRecordIndex]
+    }
+    else
+      localStorage.mapFunctionRaw = JSON.stringify(["", "", ""])
   },
   updated() {
   }

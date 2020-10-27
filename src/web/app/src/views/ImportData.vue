@@ -300,10 +300,13 @@
         Papa.parse(file.raw, {
           // ignoring empty lines in csv file
           skipEmptyLines: true,
-          complete: fileParser.parser.bind(this)
+          complete: (result) => {
+            fileParser.parser.bind(this)(result)
+            this.showMappingTool = true
+          }
         });
 
-        this.showMappingTool = true}
+        }
     },
     components: {
       MappingTool
