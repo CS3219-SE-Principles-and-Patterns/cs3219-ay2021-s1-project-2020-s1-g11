@@ -84,7 +84,7 @@ export default {
     },
 
     setUploadedFile(state, {data, raw}) {
-      state.data.records[state.data.currentRecordIndex].uploadedLabel = data[0];
+      state.data.records[state.data.currentRecordIndex].uploadedLabel = data ? data[0] : "";
       state.data.records[state.data.currentRecordIndex].uploadedData = data;
       state.data.records[state.data.currentRecordIndex].uploadedRaw = raw;
       state.data.records[state.data.currentRecordIndex].fileUploaded = true;
@@ -138,6 +138,10 @@ export default {
 
     setHasHeader(state, payload) {
       state.data.records[payload.index].hasHeader = payload.value;
+    },
+
+    setMappingFinished(state) {
+      state.data.records[state.data.currentRecordIndex].mappingFinished = true;
     },
 
     setMapping(state, payload) {

@@ -61,6 +61,7 @@
           <el-radio-group v-model="formatType" class="form-item">
             <el-radio :label="1">EasyChair</el-radio>
             <el-radio :label="2">SoftConf</el-radio>
+            <el-radio :label="3">Custom</el-radio>
           </el-radio-group>
         </div>
       </div>
@@ -302,7 +303,8 @@
           skipEmptyLines: true,
           complete: (result) => {
             fileParser.parser.bind(this)(result)
-            this.showMappingTool = true
+            if (this.formatType === 3) // show map function dialog for custom format
+              this.showMappingTool = true
           }
         });
 

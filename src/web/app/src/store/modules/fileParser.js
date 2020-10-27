@@ -106,11 +106,25 @@ export default {
     parser: function (result) {
         const recordIndex = this.$store.state.dataMapping.data.currentRecordIndex
         const type = this.$store.state.dataMapping.data.formatType
-        const parser = type === 1 ? parsers.easychair[recordIndex] : parsers.softconf[recordIndex]
+        let parser
+        switch (type) {
+            case 1:
+                parser = parsers.easychair[recordIndex]
+                break
+            case 2:
+                parser = parsers.softconf[recordIndex]
+                break
+        }
 
         const data = deepCopy(result.data);
         data.shift(); // remove headers
-        const table = parser(data);
+
+        let table = result.data
+        if (parser) {
+            table = parser(data);
+            this.$store.commit("setMappingFinished");
+        }
+
 
         this.$store.commit("setUploadedFile", {data:table, raw:result.data});
         this.$store.commit("setPageLoadingStatus", false);
