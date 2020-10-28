@@ -8,6 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import sg.edu.nus.comp.cs3219.viz.common.datatransfer.AccessLevel;
 import sg.edu.nus.comp.cs3219.viz.common.entity.Presentation;
+import sg.edu.nus.comp.cs3219.viz.common.entity.PresentationAccessControl;
 import sg.edu.nus.comp.cs3219.viz.common.exception.UnauthorisedException;
 import sg.edu.nus.comp.cs3219.viz.storage.repository.PresentationAccessControlRepository;
 import sg.edu.nus.comp.cs3219.viz.test.BaseComponentTest;
@@ -23,10 +24,10 @@ import static org.junit.jupiter.api.Assertions.*;
 class GateKeeperTest extends BaseComponentTest {
 
     @Autowired
-    private static PresentationAccessControlRepository repo;
+    private PresentationAccessControlRepository repo;
 
-    private static final GateKeeper gateKeeper = new GateKeeper(repo);
-    private final JSONObject data = loadDataBundle("GateKeeperTest.json");
+    private GateKeeper gateKeeper = new GateKeeper(repo);
+    private JSONObject data = loadDataBundle("GateKeeperTest.json");
 
     @Test
     public void login_logout() {
@@ -54,51 +55,61 @@ class GateKeeperTest extends BaseComponentTest {
     @Test
     public void testVerifyDeletionAccessForPresentation() {
         assertThrows(UnauthorisedException.class, () -> gateKeeper.verifyDeletionAccessForPresentation(null));
-        Presentation presentation = null;
-        try {
-            presentation = new Gson().fromJson(
-                    data.getJSONObject("presentations").getJSONObject("presentationA").toString(), Presentation.class
-            );
-        } catch (JSONException e) {
-            fail(e);
-        }
+        Presentation presentation = getPresentation("presentationA");
         if (presentation == null) {
             fail("Null Presentation");
         }
 
         gaeSimulation.logoutUser();
-        Presentation finalPresentation = presentation;
         assertThrows(UnauthorisedException.class,
-                () -> gateKeeper.verifyDeletionAccessForPresentation(finalPresentation));
+                () -> gateKeeper.verifyDeletionAccessForPresentation(presentation));
 
         String user = "user@test.com";
         gaeSimulation.loginUser(user);
         assertThrows(UnauthorisedException.class,
-                () -> gateKeeper.verifyDeletionAccessForPresentation(finalPresentation));
+                () -> gateKeeper.verifyDeletionAccessForPresentation(presentation));
 
         user = "test@viz.test";
         gaeSimulation.loginUser(user);
-        gateKeeper.verifyDeletionAccessForPresentation(finalPresentation);
+        gateKeeper.verifyDeletionAccessForPresentation(presentation);
     }
 
     @Test
     public void testVerifyAccessForPresentation() {
         assertThrows(UnauthorisedException.class, () -> gateKeeper.verifyAccessForPresentation(null, null));
+        Presentation presentation = getPresentation("presentationA");
+        if (presentation == null) {
+            fail("Null Presentation");
+        }
+        String user = "test@viz.test";
+        gaeSimulation.loginUser(user);
+        // TODO: Repo autowiring doesn't seem to work (always null)
+        // setUpPresentationAccessControl();
+        // gateKeeper.verifyAccessForPresentation(presentation, AccessLevel.CAN_WRITE);
+    }
+
+    private void setUpPresentationAccessControl() {
+        try {
+            for (int i = 1; i <= 4; i++) {
+                repo.save(new Gson().fromJson(
+                        data.getJSONObject("presentationAccessControls").getJSONObject("AC" + i).toString(),
+                        PresentationAccessControl.class)
+                );
+            }
+        } catch (JSONException e) {
+            fail(e);
+        }
+    }
+
+    private Presentation getPresentation(String option) {
         Presentation presentation = null;
         try {
             presentation = new Gson().fromJson(
-                    data.getJSONObject("presentations").getJSONObject("presentationA").toString(), Presentation.class
+                    data.getJSONObject("presentations").getJSONObject(option).toString(), Presentation.class
             );
         } catch (JSONException e) {
             fail(e);
         }
-        if (presentation == null) {
-            fail("Null Presentation");
-        }
-        Presentation finalPresentation = presentation;
-        String user = "test@viz.test";
-        gaeSimulation.loginUser(user);
-        // TODO: Find out how to mock repo, currently throws NPE
-        // gateKeeper.verifyAccessForPresentation(finalPresentation, AccessLevel.CAN_WRITE);
+        return presentation;
     }
 }
