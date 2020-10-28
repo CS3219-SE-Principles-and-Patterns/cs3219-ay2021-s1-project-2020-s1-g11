@@ -4128,71 +4128,71 @@ export default {
 
 
 
-      "Test": {
-        name: "Test", // define the name of the chart
-        group: 'Author Record', // classify the group of record (author/submission/review)
-        data: {
-          // set the variables for bar chart
-          type: 'graph_network',
-          title: 'Test',
-          dataSet: '${PLACEHOLDER_DATA_SET}',
-          description: 'Test',
-          //determine the selections for select query
-          selections: [
-            {
-              expression: "a1_name_pair",
-              rename: "a1_name_pair"
-            },
-            {
-              expression: "a2_name_pair",
-              rename: "a2_name_pair"
-            },
-            {
-              expression: "num_entries",
-              rename: "num_entries"
-            }
-          ],
-          //determine the table name for query
-          involvedRecords: [
-            {
-              name: "(select " +
-              "concat (a1.a_first_name,a1.a_last_name) as a1_name_pair,\n" +
-              "concat (a2.a_first_name,a2.a_last_name) as a2_name_pair,\n" +
-              "count(*) as Num_Entries\n" +
-              "from author_record as a1, author_record as a2\n" +
-              "where a1.data_set = '${PLACEHOLDER_DATA_SET}' and a2.data_set = '${PLACEHOLDER_DATA_SET}'\n" +          
-              "and a1.a_submission_id = a2.a_submission_id and a1.a_id < a2.a_id\n" +
-              "group by a1.a_id, a2.a_id\n" +
-              "order by count(*) desc)as temp",
-              customized: true,
-            }
-          ],
-          filters: [],
-          joiners: [],
-          //determine the field for group by clause
-          groupers: [
+      // "Test": {
+      //   name: "Test", // define the name of the chart
+      //   group: 'Author Record', // classify the group of record (author/submission/review)
+      //   data: {
+      //     // set the variables for bar chart
+      //     type: 'graph_network',
+      //     title: 'Test',
+      //     dataSet: '${PLACEHOLDER_DATA_SET}',
+      //     description: 'Test',
+      //     //determine the selections for select query
+      //     selections: [
+      //       {
+      //         expression: "a1_name_pair",
+      //         rename: "a1_name_pair"
+      //       },
+      //       {
+      //         expression: "a2_name_pair",
+      //         rename: "a2_name_pair"
+      //       },
+      //       {
+      //         expression: "num_entries",
+      //         rename: "num_entries"
+      //       }
+      //     ],
+      //     //determine the table name for query
+      //     involvedRecords: [
+      //       {
+      //         name: "(select " +
+      //         "concat (a1.a_first_name,a1.a_last_name) as a1_name_pair,\n" +
+      //         "concat (a2.a_first_name,a2.a_last_name) as a2_name_pair,\n" +
+      //         "count(*) as Num_Entries\n" +
+      //         "from author_record as a1, author_record as a2\n" +
+      //         "where a1.data_set = '${PLACEHOLDER_DATA_SET}' and a2.data_set = '${PLACEHOLDER_DATA_SET}'\n" +          
+      //         "and a1.a_submission_id = a2.a_submission_id and a1.a_id < a2.a_id\n" +
+      //         "group by a1.a_id, a2.a_id\n" +
+      //         "order by count(*) desc)as temp",
+      //         customized: true,
+      //       }
+      //     ],
+      //     filters: [],
+      //     joiners: [],
+      //     //determine the field for group by clause
+      //     groupers: [
 
-          ],
-          sorters: [
+      //     ],
+      //     sorters: [
 
-          ],
-          // set the labels, x and y axis, and modify chart style
-          extraData: {
-            linkMessage: [ 
-              {
-                msg: " has collaborated with  "
-              },
-              {
-                msg: " for  "
-              },
-              {
-                msg: " entries ",
-              }
-            ],
-            numOfResultToDisplay: 10,
-            isColorfulBar: true,
-            nodeMessage: "Name: ",
-          }
-        }
-      },
+      //     ],
+      //     // set the labels, x and y axis, and modify chart style
+      //     extraData: {
+      //       linkMessage: [ 
+      //         {
+      //           msg: " has collaborated with  "
+      //         },
+      //         {
+      //           msg: " for  "
+      //         },
+      //         {
+      //           msg: " entries ",
+      //         }
+      //       ],
+      //       numOfResultToDisplay: 10,
+      //       isColorfulBar: true,
+      //       nodeMessage: "Name: ",
+      //     }
+      //   }
+      // },
 }

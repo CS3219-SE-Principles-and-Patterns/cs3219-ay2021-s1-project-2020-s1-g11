@@ -8,10 +8,16 @@
                     class="errorMsg"/>
             <el-form v-else :rules="rules" ref="presentationForm"
                     :model="presentationForm" v-loading="isLoading">
-
                 <el-form-item label="Name" :prop="'name'" >
                     <el-col>
                         <el-input v-model="presentationFormName" placeholder="Enter name"/>
+                    </el-col>
+                </el-form-item>
+                <el-form-item label="Data Set" :prop="'dataset'">
+                    <el-col>
+                        <el-select :value="presentationFormVersion" v-on:change="setPresentationFormVersion" placeholder="Please select a data set" >
+                            <el-option v-for="v in versions" :key="v" :label="v" :value="v"></el-option>
+                        </el-select>
                     </el-col>
                 </el-form-item>
                 <el-form-item label="Description">
@@ -27,22 +33,12 @@
 
         <!-- dialogs -->
         <el-dialog
-        title="Confirm"
-        :visible.sync="hasSubmitted"
-        width="30%" center>
-            <span> Are you sure that the presentation details are correct?</span>
-            <span slot="footer" class="dialog-footer">
-                <el-button v-on:click="hasSubmitted = false">Cancel</el-button>
-                <el-button type="primary" v-on:click="addPresentation">Confirm</el-button>
-            </span>
-        </el-dialog>
-        <el-dialog
         title="Success"
         :visible.sync="saveSuccess"
         width="30%" center>
-            <span>You have successfully added a new presentation</span>
+            <span>You have successfully added a new presentation!</span>
             <span slot="footer" class="dialog-footer">
-                <el-button type="primary" v-on:click="closeSuccess">Sure</el-button>
+                <el-button type="primary" v-on:click="closeSuccess">OK</el-button>
             </span>
         </el-dialog>
         <!-- end of dialogs -->
@@ -62,9 +58,11 @@
                 this.updatePresentationForm()
             },
         },
+        beforeCreate() {
+            this.$store.dispatch('getVersionList');
+        },
         mounted() {
             this.updatePresentationForm();
-            this.$store.dispatch('getVersionList')
         },
         computed: {
             isLogin() {
@@ -75,10 +73,15 @@
                     name: this.presentationFormName,
                     creatorIdentifier: this.presentationFormCreatorIdentifier,
                     description: this.presentationFormDescription,
+                    dataset: this.presentationFormVersion,
                 }
             },
             presentationFormCreatorIdentifier() {
                 return this.$store.state.presentation.presentationForm.creatorIdentifier
+            },
+            versions() {
+                let list = Array.from(new Set(this.$store.state.dataManage.versionList.map(v => v.versionId)));
+                return list;
             },
             presentationFormName: {
                 get() {
@@ -102,7 +105,17 @@
                     })
                 },
             },
-
+            presentationFormVersion: {
+                get() {
+                    return this.$store.state.presentation.presentationForm.version;
+                },
+                set(value) {
+                    this.$store.commit('setPresentationFormField', {
+                        field: 'version',
+                        value
+                    });
+                }
+            },
             isNewPresentation() {
                 return this.id === ID_NEW_PRESENTATION
             },
@@ -127,13 +140,19 @@
                 hasSubmitted: false,
                 rules: {
                     name: [
-                        {required: true, message: 'Please enter presentation name', trigger: 'blur'},
-                        {min: 3, message: 'The length should be more than 3 character', trigger: 'blur'}
+                        {required: true, message: 'Please enter presentation name!', trigger: 'blur'},
+                        {min: 3, message: 'The length should be more than 3 character!', trigger: 'blur'}
+                    ],
+                    dataset: [
+                        {required: true, message: 'Please select a data set!', trigger: 'blur'},
                     ],
                 }
             }
         },
         methods: {
+            setPresentationFormVersion(version) {
+                this.presentationFormVersion = version;
+            },
             addPresentation() {
                 this.hasSubmitted = false;
                 this.$store.dispatch('savePresentation').then(() => {
@@ -174,11 +193,16 @@
                                 title: 'Error',
                                 message: object.name[0].message
                             });
+                        } else if('dataset' in object) {
+                            this.$notify.error({
+                                title: 'Error',
+                                message: object.dataset[0].message
+                            });
                         }
                         return
                     }
                     this.$refs['presentationForm'].clearValidate();
-                    this.hasSubmitted = true;
+                    this.addPresentation();
                 });
             },
             closeSuccess() {
@@ -196,5 +220,9 @@
 <style scoped>
     .errorMsg {
         margin-bottom: 18px;
+    }
+
+    .el-select {
+        display: block;
     }
 </style>

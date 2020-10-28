@@ -10,6 +10,7 @@ import sg.edu.nus.comp.cs3219.viz.storage.repository.SubmissionRecordRepository;
 
 import java.util.List;
 import java.util.stream.Collectors;
+import java.util.ArrayList;
 
 @Component
 public class RecordLogic {
@@ -107,5 +108,91 @@ public class RecordLogic {
             s.setAuthorSet(submissionAuthorRecords);
             // the other field can be arbitrary
         }).collect(Collectors.toList()));
+    }
+
+    @Transactional
+    public void deleteAuthorRecordForDataSet(String dataSet, String versionId) {
+        Version versionToDelete = new Version(new Version.VersionPk(dataSet, "AuthorRecord", versionId));
+        authorRecordRepository.deleteAllByVersionEquals(versionToDelete);
+    }
+
+    @Transactional
+    public void deleteReviewRecordForDataSet(String dataSet, String versionId) {
+        Version versionToDelete = new Version(new Version.VersionPk(dataSet, "ReviewRecord", versionId));
+        reviewRecordRepository.deleteAllByVersionEquals(versionToDelete);
+    }
+
+    @Transactional
+    public void deleteSubmissionRecordForDataSet(String dataSet, String versionId) {
+        Version versionToDelete = new Version(new Version.VersionPk(dataSet, "SubmissionRecord", versionId));
+        submissionRecordRepository.deleteAllByVersionEquals(versionToDelete);
+    }
+
+    @Transactional 
+    public void editVersionId(String dataSet, String old_versionId, String new_versionId) {
+        Version oldAuthorVersion = new Version(new Version.VersionPk(dataSet, "AuthorRecord", old_versionId));
+        Version oldReviewVersion = new Version(new Version.VersionPk(dataSet, "ReviewRecord", old_versionId));
+        Version oldSubmissionVersion = new Version(new Version.VersionPk(dataSet, "SubmissionRecord", old_versionId));
+        Version newAuthorVersion = new Version(new Version.VersionPk(dataSet, "AuthorRecord", new_versionId));
+        Version newReviewVersion = new Version(new Version.VersionPk(dataSet, "ReviewRecord", new_versionId));
+        Version newSubmissionVersion = new Version(new Version.VersionPk(dataSet, "SubmissionRecord", new_versionId));
+
+        // Author
+        List<AuthorRecord> authorRecordList = new ArrayList<AuthorRecord>(authorRecordRepository.findByVersionEquals(oldAuthorVersion));
+        authorRecordRepository.deleteAllByVersionEquals(oldAuthorVersion);
+        authorRecordRepository.saveAll(authorRecordList.stream().peek(r -> {
+            r.setId(null);
+            r.setVersion(newAuthorVersion);
+        }).collect(Collectors.toList()));
+
+        // Review
+        List<ReviewRecord> reviewRecordList = new ArrayList<ReviewRecord>(reviewRecordRepository.findByVersionEquals(oldReviewVersion));
+        reviewRecordRepository.deleteAllByVersionEquals(oldReviewVersion);
+        reviewRecordRepository.saveAll(reviewRecordList.stream().peek(r -> {
+            r.setId(null);
+            r.setVersion(newReviewVersion);
+        }).collect(Collectors.toList()));  
+
+        // Submission
+        List<SubmissionRecord> submissionRecordList = new ArrayList<SubmissionRecord>(submissionRecordRepository.findByVersionEquals(oldSubmissionVersion));
+        submissionRecordRepository.deleteAllByVersionEquals(oldSubmissionVersion);
+        submissionRecordRepository.saveAll(submissionRecordList.stream().peek(s -> {
+            s.setId(null);
+            s.setVersion(newSubmissionVersion);
+            List<SubmissionAuthorRecord> submissionAuthorRecords = s.getAuthors().stream()
+                    .map(authorName -> {
+                        SubmissionAuthorRecord existing = submissionAuthorRecordRepository.findFirstByNameEqualsAndDataSetEquals(authorName, dataSet);
+                        if (existing == null) {
+                            existing = new SubmissionAuthorRecord();
+                            existing.setDataSet(dataSet);
+                            existing.setName(authorName);
+                            existing = submissionAuthorRecordRepository.save(existing);
+                        }
+                        return existing;
+                    })
+                    .collect(Collectors.toList());
+            s.setAuthorSet(submissionAuthorRecords);
+        }).collect(Collectors.toList()));
+    }
+
+    @Transactional
+    public List <AuthorRecord> getAuthorRecordForDataSet(String dataSet, String versionId) {
+        Version versionToGet = new Version(new Version.VersionPk(dataSet, "AuthorRecord", versionId));
+        List <AuthorRecord> authorRecordList = authorRecordRepository.findByVersionEquals(versionToGet);
+        return authorRecordList;
+    }
+
+    @Transactional
+    public List <ReviewRecord> getReviewRecordForDataSet(String dataSet, String versionId) {
+        Version versionToGet = new Version(new Version.VersionPk(dataSet, "ReviewRecord", versionId));
+        List <ReviewRecord> reviewRecordList = reviewRecordRepository.findByVersionEquals(versionToGet);
+        return reviewRecordList;
+    }
+
+    @Transactional
+    public List <SubmissionRecord> getSubmissionRecordForDataSet(String dataSet, String versionId) {
+        Version versionToGet = new Version(new Version.VersionPk(dataSet, "SubmissionRecord", versionId));
+        List <SubmissionRecord> submissionRecordList = submissionRecordRepository.findByVersionEquals(versionToGet);
+        return submissionRecordList;
     }
 }

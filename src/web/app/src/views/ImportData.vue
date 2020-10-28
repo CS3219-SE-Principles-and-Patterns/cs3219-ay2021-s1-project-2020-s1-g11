@@ -238,10 +238,10 @@
           this.conferenceName !== '' && this.conferenceYear !== '');
       },
       isNewVersion: function() {
-        if (!this.$store.state.presentation.versionList) {
+        if (!this.$store.state.dataManage.versionList) {
           return false;
         } else {
-          let verList = this.$store.state.presentation.versionList.map(v => v.versionId);
+          let verList = this.$store.state.dataManage.versionList.map(v => v.versionId);
           return !verList.includes(this.$store.state.dataMapping.data.versionId);
         }
       }
@@ -259,7 +259,7 @@
       },
       querySearch(queryString, cb) {
         // convert to array of string
-        var links = this.$store.state.presentation.versionList.map(v => v.versionId);
+        var links = this.$store.state.dataManage.versionList.map(v => v.versionId);
         // function to remove duplicate from array of string
         let reduceFunction = (links) => links.filter((v,i) => links.indexOf(v) === i );
         links = reduceFunction(links);
