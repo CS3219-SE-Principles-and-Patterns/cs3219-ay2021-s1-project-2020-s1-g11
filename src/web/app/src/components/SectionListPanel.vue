@@ -29,7 +29,7 @@
         :title="sectionListApiErrorMsg"
         type="error" show-icon>
       </el-alert>
-      <el-card shadow="hover">
+      <el-card>
         <abstract-section-detail class="presentation-section" v-for="section in sectionList" :sectionDetail="section"
                             :key="section.id" :presentationId="presentationId" :version="presentationFormVersion"/>
         <EmptySection v-if="isSectionListEmpty" />
