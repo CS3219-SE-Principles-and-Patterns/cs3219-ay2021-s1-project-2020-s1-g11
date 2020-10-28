@@ -40,13 +40,13 @@ public class VersionController extends BaseRestController{
      * @return
      * @throws URISyntaxException
      */
-    @PostMapping("/version/{versionId}")
-    public ResponseEntity<?> newVersion(@PathVariable String versionId) throws URISyntaxException {
+    @PostMapping("/version")
+    public ResponseEntity<?> newVersion(@RequestBody Version version) throws URISyntaxException {
         UserInfo userInfo = gateKeeper.verifyLoginAccess();
 
-        this.versionLogic.saveForUser(versionId, userInfo.getUserEmail());
+        Version newVersion = this.versionLogic.saveForUser(version, userInfo.getUserEmail());
 
-        return ResponseEntity.created(new URI("/version")).build();
+        return ResponseEntity.created(new URI("/version/" + newVersion.getId())).build();
     }
 
     /**

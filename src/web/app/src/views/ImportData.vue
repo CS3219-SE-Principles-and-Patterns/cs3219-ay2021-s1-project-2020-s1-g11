@@ -38,7 +38,7 @@
         <div slot="header" class="clearfix">
           <span>Upload Data</span>
         </div>
-      
+
       <div class="section">
         <h2> Record Information </h2>
         <el-divider></el-divider>
@@ -61,6 +61,7 @@
           <el-radio-group v-model="formatType" class="form-item">
             <el-radio :label="1">EasyChair</el-radio>
             <el-radio :label="2">SoftConf</el-radio>
+            <el-radio :label="3">Custom</el-radio>
           </el-radio-group>
         </div>
       </div>
@@ -108,16 +109,16 @@
       </div>
 
       <div class="section">
-        <el-button 
-          icon="el-icon-upload2" 
-          type="primary" 
+        <el-button
+          icon="el-icon-upload2"
+          type="primary"
           v-on:click="submitMapping()"
           :disabled="isReadyForUpload"
         >Upload Data</el-button>
       </div>
-      
+
       <!-- <div class="section">
-        <h2> 
+        <h2>
           Version Information
 
           <el-tooltip placement="top">
@@ -128,9 +129,9 @@
             </div>
             <el-button type="text" icon="el-icon-question" circle></el-button>
           </el-tooltip>
-        </h2>        
+        </h2>
         <el-divider></el-divider>
-        
+
         <el-row class="form-card">
           <el-col>
             <label class="label">
@@ -155,7 +156,7 @@
   import MappingTool from "@/components/MappingTool.vue";
   import Papa from "papaparse";
   import PredefinedMappings from "@/store/data/predefinedMapping"
-  import moment from "moment"
+  import fileParser from "@/store/modules/fileParser";
 
   export default {
     name: "ImportData",
@@ -233,7 +234,7 @@
         return this.$store.state.dataMapping.isUploadSuccess;
       },
       isReadyForUpload: function () {
-        return !(this.$store.state.dataMapping.data.records.some(record => record.fileUploaded) && 
+        return !(this.$store.state.dataMapping.data.records.some(record => record.fileUploaded) &&
           this.conferenceName !== '' && this.conferenceYear !== '');
       },
       isNewVersion: function() {
@@ -300,151 +301,14 @@
         Papa.parse(file.raw, {
           // ignoring empty lines in csv file
           skipEmptyLines: true,
-          complete: function (result) {
-
-            var res = result;
-            var res2 = res.data;
-            var verId = this.$store.state.dataMapping.data.versionId;
-
-            //author file preprocessing
-            if(this.$store.state.dataMapping.data.currentRecordIndex === 0) {
-              var authorres=[];
-              //ACL file preprocessing //Softconf
-              if(this.$store.state.dataMapping.data.formatType === 2) {
-                authorres.push(["submission #","first name","last name","email","country","organization","Web page","person #","corresponding?"]);
-                // for each row of data, manipulate temporary array element[] 
-                // then push to true array res2[] for parsing
-                for (var i = 1; i < res2.length; i++) {
-                  var x = res2[i];
-                  //console.log(x);
-                  var k=0,j=14,element=[],corr="",country="";
-                  while(x[j]!=""){
-                    if(x[j]==x[65] && x[j+1]==x[66]){
-                      corr = "yes";
-                      country=x[78];
-                    }
-                    else {
-                      corr="no";
-                      country="";
-                    }
-                    element[k]= [x[0],x[j],x[j+1],x[j+2],country,x[j+3],"","",corr, verId];
-                    authorres.push(element[k]);
-                    k+=1;
-                    j=14+k*5;
-                  }
-                //var element1=[x[0],x[14],x[15],x[16],"",x[17],"",""];
-                }
-                res2=authorres;
-                //console.log(authorres)
-              }
-
-              //author anonymization - Both formats
-              var convertstring=require("convert-string");
-              for (var m=1;m<res2.length;m++) {
-                var conv1=convertstring.stringToBytes(res2[m][1]);
-                var conv2=convertstring.stringToBytes(res2[m][2]);
-                var firstname="";
-                var lastname="";
-                for (var a=0;a<conv1.length;a++) {
-                  firstname=firstname.concat(String(conv1[a]+18));
-                }
-                for (var w=0;w<conv2.length;w++) {
-                  lastname=lastname.concat(String(conv2[w]+18));
-                }
-                res2[m][1]=firstname;
-                res2[m][2]=lastname;
-              }
-              //console.log(res2);
-            }
-
-            //review file preprocessing
-            else if( this.$store.state.dataMapping.data.currentRecordIndex === 1) {
-              //Softconf
-              if(this.$store.state.dataMapping.data.formatType === 2) {
-                var reviewres=[];
-                reviewres.push(["Review Id","Submission Id", "Num Review Assignment", "Reviewer Name", "Expertise Level", "Review Comment","Confidence Level", "Overall Evaluation Score", "Column 9","Column 10","Column 11","Column 12", "Day of the Review Date", "Time of the Review Date", "Has Recommended for the Best Paper"]);
-
-                for (var q = 1; q < res2.length; q++) {
-                    var z = res2[q];
-                    z[32]="confidence: "+z[32];
-                    //console.log(typeof(z[7]));
-                    //var str=z[7].toString();
-                    var date_time=z[7].split(" ");
-                    //console.log(date_time);
-                    var date=date_time[0];
-                    var time=date_time[1].split(":")[0]+":"+date_time[1].split(":")[1];
-                    //console.log(date,time);
-                    element=["",z[0],"","","",z[38],z[32],z[31],"","","","",date,time,"",verId];
-                    reviewres.push(element);
-                }
-                res2=reviewres;
-                //console.log(reviewres);
-              }
-
-              //author anonymization - JCDL
-              // Easy Chair
-              else if(this.$store.state.dataMapping.data.formatType === 1){
-                var convert_string=require("convert-string");
-                for(var index=1;index<res2.length;index++){
-                  var convert=convert_string.stringToBytes(res2[index][3]);
-                  var name="";
-                  for(var idx=0;idx<convert.length;idx++) {
-                      name=name.concat(String(convert[idx]+18));
-                  }
-                  res2[index][3]=name;
-                }
-              }
-            }
-
-            //ACL submission file processing
-            else if( this.$store.state.dataMapping.data.currentRecordIndex === 2) {
-              if(this.$store.state.dataMapping.data.formatType=="2"){
-              var submissionres=[];
-              submissionres.push(["#", "track #", "track name", "title", "authors", "submitted","last updated", "form fields", "keywords", "decision", "notified", "reviews sent", "abstract"]);
-
-              for (var l = 1; l < res2.length; l++) {
-                var y = res2[l];
-                var dt = moment(y[10], "D MMM YYYY HH:mm:ss").format("YYYY-M-D H:m");
-                if(y[6].includes("Reject")){y[6]="reject";}
-                else {y[6]="accept";}
-                //console.log(x);
-                element=[y[0],"",y[4],y[2],y[3],dt,dt,"",y[13],y[6],"","",y[9], verId];
-                submissionres.push(element);
-              }
-                res2=submissionres;
-              }
-            }
-
-            if (this.$store.state.dataMapping.data.formatType === 1) {
-              var tempCSV=[];
-              //author
-              if(this.$store.state.dataMapping.data.currentRecordIndex === 0){
-                tempCSV.push(["submission #","first name","last name","email","country","organization","Web page","person #","corresponding?"]);
-              }
-              //review
-              else if(this.$store.state.dataMapping.data.currentRecordIndex === 1){
-                tempCSV.push(["Review Id","Submission Id", "Num Review Assignment", "Reviewer Name", "Expertise Level", "Review Comment","Confidence Level", "Overall Evaluation Score", "Column 9","Column 10","Column 11","Column 12", "Day of the Review Date", "Time of the Review Date", "Has Recommended for the Best Paper"]);
-              }
-              //submission
-              else if(this.$store.state.dataMapping.data.currentRecordIndex === 2){
-                tempCSV.push(["#", "track #", "track name", "title", "authors", "submitted","last updated", "form fields", "keywords", "decision", "notified", "reviews sent", "abstract"]);
-              }
-              // for each row of data, manipulate temporary array element[] 
-              // then push to true array res2[] for parsing
-              var csvRow=[];
-              for (var rowNum = 1; rowNum < res2.length; rowNum++) {
-                csvRow = res2[rowNum];
-                //csvRow.push(verId);
-                tempCSV.push(csvRow);
-              }
-              res2=tempCSV;
-            }
-            this.$store.commit("setUploadedFile",res2);
-            this.$store.commit("setPageLoadingStatus", false);
-            this.showMappingTool = true;
-          }.bind(this)
+          complete: (result) => {
+            fileParser.parser.bind(this)(result)
+            if (this.formatType === 3) // show map function dialog for custom format
+              this.showMappingTool = true
+          }
         });
-      }
+
+        }
     },
     components: {
       MappingTool
@@ -474,7 +338,7 @@
     display: table;
     content: "";
   }
-  
+
   .clearfix:after {
     clear: both
   }

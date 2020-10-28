@@ -28,6 +28,7 @@ export default {
           tableType: idx,
           hasHeader: false,
           uploadedData: [],
+          uploadedRaw: [],
           uploadedLabel: [],
           mappingResult: [],
           processedResult: [],
@@ -82,9 +83,10 @@ export default {
       state.isUploadSuccess = success;
     },
 
-    setUploadedFile(state, data) {
-      state.data.records[state.data.currentRecordIndex].uploadedLabel = data[0];
+    setUploadedFile(state, {data, raw}) {
+      state.data.records[state.data.currentRecordIndex].uploadedLabel = data ? data[0] : "";
       state.data.records[state.data.currentRecordIndex].uploadedData = data;
+      state.data.records[state.data.currentRecordIndex].uploadedRaw = raw;
       state.data.records[state.data.currentRecordIndex].fileUploaded = true;
     },
 
@@ -136,6 +138,10 @@ export default {
 
     setHasHeader(state, payload) {
       state.data.records[payload.index].hasHeader = payload.value;
+    },
+
+    setMappingFinished(state) {
+      state.data.records[state.data.currentRecordIndex].mappingFinished = true;
     },
 
     setMapping(state, payload) {
@@ -202,17 +208,14 @@ export default {
 
         let newRecord = deepCopy(record);
         // add version to end
-        for (var i = 0; i < newRecord.processedResult.length; i++){
-          var row = newRecord.processedResult[i];
-          row.versionId = state.data.versionId;
-        }
+        newRecord.uploadedData.forEach(row => row.versionId = state.data.versionId)
 
         return newRecord;
       });
 
       axios.all(fnKeyEntry.map(entry => postVersion(entry)))
         .then(axios.spread(() => {
-          axios.all(records.map((record, idx) => postTable(endpoints[idx], record.processedResult)))
+          axios.all(records.map((record, idx) => postTable(endpoints[idx], record.uploadedData)))
             .then(axios.spread(() => {
               commit("setPageLoadingStatus", false);
               commit("setUploadSuccess", true);

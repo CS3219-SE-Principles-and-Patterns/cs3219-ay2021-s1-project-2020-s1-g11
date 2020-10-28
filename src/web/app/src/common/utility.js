@@ -1,3 +1,5 @@
+import {stringToBytes} from "convert-string";
+
 export const deepCopy = (obj) => {
   return JSON.parse(JSON.stringify(obj));
 };
@@ -13,3 +15,7 @@ export const filterPredefinedMap = (mappedIdArray, originalArray) => {
   }
   return result;
 };
+
+export const anonymize = (string, offset) => {
+  return stringToBytes(string).map(i => i + offset).join("")
+}
