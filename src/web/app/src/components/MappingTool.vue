@@ -11,23 +11,23 @@
           <h3>Raw</h3>
           <table>
             <tr>
-              <th v-for="cell in uploadedRaw[0]">{{cell}}</th>
+              <th v-for="cell in uploadedRaw[0]" v-bind:key="cell">{{cell}}</th>
             </tr>
-            <tr v-for="item in uploadedRaw.slice(1, 6)">
-              <td v-for="cell in item">{{cell}}</td>
+            <tr v-for="item in uploadedRaw.slice(1, 6)" v-bind:key="item">
+              <td v-for="cell in item" v-bind:key="cell">{{cell}}</td>
             </tr>
           </table>
 
           <h3>Mapped</h3>
           <table>
             <tr>
-              <th v-for="i in Object.keys(uploadedData[0])">
+              <th v-for="i in Object.keys(uploadedData[0])" v-bind:key="i">
                 {{i}}
               </th>
             </tr>
-            <tr v-for="item in uploadedData.slice(0, 5)">
+            <tr v-for="item in uploadedData.slice(0, 5)" v-bind:key="item">
 
-              <td v-for="cell in item">{{cell}}</td>
+              <td v-for="cell in item" v-bind:key="cell">{{cell}}</td>
             </tr>
           </table>
         </div>
@@ -79,7 +79,6 @@
 <script>
 import {deepCopy, filterPredefinedMap} from "@/common/utility"
 import PredefinedMappings from "@/store/data/predefinedMapping"
-import {mapState} from "vuex";
 
 export default {
   name: "MappingTool",
@@ -174,14 +173,9 @@ export default {
   },
   methods: {
     updateMapFunction() {
-      try {
-        this.mapFunction = eval(this.mapFunctionRaw);
-        if (this.mapFunction)
-          this.uploadedData = this.mapFunction(this.uploadedRaw.slice(1));
-      } catch (e) {
-        console.error(e)
-      }
-
+      this.mapFunction = eval(this.mapFunctionRaw);
+      if (this.mapFunction)
+        this.uploadedData = this.mapFunction(this.uploadedRaw.slice(1));
     },
     loadPredefined() {
       let predefinedMapping = PredefinedMappings[this.$store.state.dataMapping.data.currentRecordIndex + 1].mapping;
