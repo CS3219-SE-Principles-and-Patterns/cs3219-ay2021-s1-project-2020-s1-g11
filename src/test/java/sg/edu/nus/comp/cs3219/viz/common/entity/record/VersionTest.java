@@ -5,6 +5,9 @@ import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.*;
 
+/**
+ * SUT: {@link Version}
+ */
 class VersionTest {
 
     private Version.VersionPk testPk;
