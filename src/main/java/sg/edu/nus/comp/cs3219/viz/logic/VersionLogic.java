@@ -24,10 +24,10 @@ public class VersionLogic {
         return versionRepository.findById_DataSetAndId_RecordType(userInfo.getUserEmail(), recordType);
     }
 
-    public Version saveForUser(Version version, UserInfo userInfo){
+    public Version saveForUser(Version version, String dataSet){
         Version newVersion = new Version();
         Version.VersionPk newVersionID = version.getId();
-        newVersionID.setDataSet(userInfo.getUserEmail());
+        newVersionID.setDataSet(dataSet);
         newVersion.setId(newVersionID);
 
         return versionRepository.save(newVersion);
