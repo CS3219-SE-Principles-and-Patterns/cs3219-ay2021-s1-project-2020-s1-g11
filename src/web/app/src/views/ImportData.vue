@@ -6,7 +6,6 @@
       v-if="!isLogin && !isAppLoading">
       &nbsp;<el-button type="warning" plain size="mini" @click="navigateToHomePage">Return to the Home Page</el-button>
     </el-alert>
-
     <div v-if="isLogin">
       <el-dialog
         :title="dbSchemas.length === 0 ? '' : dbSchemas[currentRecordIndex].name"
@@ -33,12 +32,10 @@
           <el-button type="primary" v-on:click="() => { showVersionConflict = false; }">OK</el-button>
         </span>
       </el-dialog>
-
       <el-card>
         <div slot="header" class="clearfix">
           <span>Upload Data</span>
         </div>
-
       <div class="section">
         <h2> Record Information </h2>
         <el-divider></el-divider>
@@ -54,7 +51,6 @@
             <el-input v-model="conferenceYear" class="form-item" placeholder="Year"></el-input>
           </el-col>
         </el-row>
-
         <div class="form-card">
           <label class="label"> Data Format </label>
           <br/>
@@ -65,13 +61,11 @@
           </el-radio-group>
         </div>
       </div>
-
       <div class="section">
         <h2>
           Data Files
         </h2>
         <el-divider></el-divider>
-
         <el-row>
           <el-col :md="24 / records.length" v-for="(record, idx) in records" :key="idx">
             <label class="label">{{ dbSchemas[idx].name }}</label>
@@ -92,14 +86,7 @@
                 <div class="el-upload__text">File attached successfully</div>
               </div>
             </el-upload>
-            <div v-if="!record.mappingFinished">
-              <div class="form-card">
-                <el-checkbox :value="record.hasHeader" v-on:change="val => setHasHeader(val, record.tableType)">
-                  File Has Header
-                </el-checkbox>
-              </div>
-            </div>
-            <div v-else>
+            <div v-if="record.mappingFinished">
               <div class="form-card">
                 <el-button icon="el-icon-delete" type="danger" v-on:click="() => fileDeleteHandler(record.tableType)">Delete File</el-button>
               </div>
@@ -107,7 +94,6 @@
           </el-col>
         </el-row>
       </div>
-
       <div class="section">
         <el-button
           icon="el-icon-upload2"
@@ -116,37 +102,6 @@
           :disabled="isReadyForUpload"
         >Upload Data</el-button>
       </div>
-
-      <!-- <div class="section">
-        <h2>
-          Version Information
-
-          <el-tooltip placement="top">
-            <div slot="content">
-              If the input version is an existing version, current record will be replaced based on record type.
-              <br/>
-              If the input version is a new version, current record will be created based on record type.
-            </div>
-            <el-button type="text" icon="el-icon-question" circle></el-button>
-          </el-tooltip>
-        </h2>
-        <el-divider></el-divider>
-
-        <el-row class="form-card">
-          <el-col>
-            <label class="label">
-              Version
-            </label>
-            <br/>
-            <el-autocomplete
-              class="inline-input"
-              v-model="versionId"
-              :fetch-suggestions="querySearch"
-              placeholder="Input Version"
-            ></el-autocomplete>
-          </el-col>
-        </el-row> -->
-
       </el-card>
     </div>
   </el-main>
