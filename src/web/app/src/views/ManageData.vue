@@ -6,6 +6,23 @@
         v-if="!isLogin && !isAppLoading">
       &nbsp;<el-button type="warning" plain size="mini" @click="navigateToHomePage">Return to the Home Page</el-button>
     </el-alert>
+    <div v-if="isLogin">
+    <el-dialog
+        :title="dbSchemas.length === 0 ? '' : dbSchemas[currentRecordIndex].name"
+        :visible.sync="showMappingTool"
+        width="80%"
+        :show-close="false">
+      <mapping-tool ref="mapTool" v-on:close-dialog="showMappingTool = false"></mapping-tool>
+    </el-dialog>
+    <el-dialog
+        title="Success"
+        :visible.sync="uploadSuccess"
+        width="30%" center>
+      <span>You have successfully imported data using the column mapping!</span>
+      <span slot="footer" class="dialog-footer">
+          <el-button type="primary" v-on:click="closeSuccess">OK</el-button>
+        </span>
+    </el-dialog>
     <h1 class="alignLeft">My Data</h1>
     <el-button class="alignRight" type="primary" icon="el-icon-plus"
            v-if="!isDataListEmpty" @click="handleImportData">Import Data</el-button>
@@ -30,7 +47,17 @@
                     Upload<i class="el-icon-arrow-down el-icon--right"></i>
                   </el-button>
                   <el-dropdown-menu slot="dropdown">
-                    <el-dropdown-item v-for="record in allRecords.filter(x => !getFileTypes(version).includes(x))" :key="record" :command="record">{{record}}</el-dropdown-item>
+                    <el-dropdown-item v-for="record in allRecords.filter(x => !getFileTypes(version).includes(x))" :key="record" :command="record">
+                      <el-upload class="form-item" drag action=""
+                                 :auto-upload="false"
+                                 :show-file-list="false"
+                                 :multiple="false"
+                                 :on-change="file => fileUploadHandler(file, record.tableType, version)"
+                                 :disabled="record.mappingFinished"
+                      >
+                      {{record}}
+                      </el-upload>
+                    </el-dropdown-item>
                   </el-dropdown-menu>
                 </el-dropdown>
                 <el-button-group>
@@ -59,12 +86,15 @@
         </zoom-center-transition>
       </li>
     </ul>
+    </div>
   </el-main>
 </template>
 
 <script>
 import EmptyData from "@/components/emptyStates/EmptyData";
 import {ZoomCenterTransition} from 'vue2-transitions'
+import Papa from "papaparse";
+import fileParser from "@/store/modules/fileParser";
 
 export default {
   name: "ManageData",
@@ -95,6 +125,15 @@ export default {
     versions() {
       return Array.from(new Set(this.$store.state.dataManage.versionList.map(v => v.versionId)));
     },
+    dbSchemas: function () {
+      return this.$store.state.dbMetaData.entities;
+    },
+    currentRecordIndex() {
+      return this.$store.state.dataMapping.data.currentRecordIndex;
+    },
+    uploadSuccess: function () {
+      return this.$store.state.dataMapping.isUploadSuccess;
+    },
     conferenceName: {
       get() {
         let idx = this.editedVersionName.lastIndexOf('_');
@@ -118,7 +157,20 @@ export default {
       }
     },
   },
+  watch: {
+    dbSchemas(newValue) {
+      if (newValue.length > 0 && !this.$store.state.dataMapping.data.initialized) {
+        this.$store.commit('initDataRecords', this.$store.state.dbMetaData.entities);
+      }
+    }
+  },
   methods: {
+    closeSuccess: function () {
+      this.$store.commit("setUploadSuccess", false);
+      this.$store.commit('initDataRecords', this.$store.state.dbMetaData.entities);
+      this.$store.commit("clearVersionId");
+      this.$store.dispatch('getVersionList');
+    },
     navigateToHomePage() {
       this.$router.replace("/home");
     },
@@ -145,11 +197,24 @@ export default {
     deleteAllRecords(versionId) {
       return this.$store.dispatch("deleteVersion", versionId);
     },
-    /* eslint-disable no-unused-vars */
-    uploadRecord(versionId, recordType) {
-      // TODO: Wait for mapping to be done
+    fileUploadHandler: function (file, idx, version) {
+      // show loading and go parsing
+      this.$store.commit("setPageLoadingStatus", true);
+      this.$store.commit("setCurrentRecordIndex", idx);
+      this.$store.commit("setVersionId", version);
+
+      Papa.parse(file.raw, {
+        // ignoring empty lines in csv file
+        skipEmptyLines: true,
+        complete: (result) => {
+          fileParser.parser.bind(this)(result)
+          if (this.formatType === 3) // show map function dialog for custom format
+            this.showMappingTool = true
+        }
+      });
+
+      this.$store.dispatch("persistMappingOldVersion");
     }
-    /* eslint-enable no-unused-vars */
   }
 }
 </script>
