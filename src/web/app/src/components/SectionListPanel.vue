@@ -2,7 +2,7 @@
   <div>
     <div v-loading="isLoadingDBMetaData || isLoadingSectionList" v-if="!isNewPresentation">
       <el-aside width="300px" class="addRowRightAlign" v-if="isLogin">
-        <el-card>  
+        <el-card class="floating">  
           <div slot="header" class="clearfix">
             <span> Add section </span>
           </div>
@@ -29,7 +29,7 @@
         :title="sectionListApiErrorMsg"
         type="error" show-icon>
       </el-alert>
-      <el-card shadow="hover">
+      <el-card>
         <abstract-section-detail class="presentation-section" v-for="section in sectionList" :sectionDetail="section"
                             :key="section.id" :presentationId="presentationId" :version="presentationFormVersion"/>
         <EmptySection v-if="isSectionListEmpty" />
@@ -204,5 +204,13 @@
   }
   .addRowRightAlign .el-card{
     margin-bottom: 16px;
+  }
+  .floating {
+    position: fixed;
+    bottom: 20px;
+    margin-right: 40px;
+  }
+  .el-aside {
+    height: 10px;
   }
 </style>
