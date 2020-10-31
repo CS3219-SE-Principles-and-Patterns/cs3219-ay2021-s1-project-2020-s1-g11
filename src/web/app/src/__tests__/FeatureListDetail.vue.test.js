@@ -2,7 +2,7 @@ import {createLocalVue, shallowMount} from '@vue/test-utils'
 import ElementUI from 'element-ui';
 import VueRouter from 'vue-router';
 import Vuex from 'vuex';
-import App from '../App'
+import FeatureListDetail from "./../components/homePageDetail/FeatureListDetail.vue";
 
 const localVue = createLocalVue();
 
@@ -10,8 +10,7 @@ localVue.use(Vuex);
 localVue.use(VueRouter);
 localVue.use(ElementUI);
 
-describe('App.vue', () => {
-
+describe("EmptySection.vue", () => {
   let store;
 
   beforeEach(() => {
@@ -19,19 +18,20 @@ describe('App.vue', () => {
       state: {
         isPageLoading: false,
         userInfo: {
-          isApiError: false
+          isApiError: false,
+          isLogin: true,
         },
         dbMetaData: {
           entitiesStatus: {
-            isLoading: false
+            isLoading: false,
           }
         }
       }
     })
   });
 
-  test('App is a vue instance and mounted correctly', () => {
-    const wrapper = shallowMount(App, {store, localVue});
-    expect(wrapper.isVueInstance()).toBeTruthy()
-  })
+  it('renders correctly', () => {
+    const wrapper = shallowMount(FeatureListDetail, {store, localVue})
+    expect(wrapper.element).toMatchSnapshot()
+  });
 });

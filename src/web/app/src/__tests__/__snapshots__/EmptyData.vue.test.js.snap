@@ -1,0 +1,57 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`EmptyData.vue renders correctly 1`] = `
+<div
+  class="emptySection"
+>
+  <el-row-stub
+    align="top"
+    justify="start"
+    tag="div"
+  >
+    <el-col-stub
+      span="24"
+      tag="div"
+    >
+      <div
+        class="icon"
+      >
+        <img
+          src="@/assets/businessman.png"
+        />
+      </div>
+    </el-col-stub>
+  </el-row-stub>
+   
+  <el-row-stub
+    align="top"
+    justify="start"
+    tag="div"
+  >
+    <el-col-stub
+      span="24"
+      tag="div"
+    >
+      <p>
+        <i>
+           No data found. 
+        </i>
+      </p>
+       
+      <p>
+        
+        Let's get started by importing data.
+      
+      </p>
+       
+      <el-button-stub
+        icon="el-icon-plus"
+        nativetype="button"
+        type="primary"
+      >
+        Import Data
+      </el-button-stub>
+    </el-col-stub>
+  </el-row-stub>
+</div>
+`;
