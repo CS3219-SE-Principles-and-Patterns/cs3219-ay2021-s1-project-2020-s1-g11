@@ -23,6 +23,25 @@
           <el-button type="primary" v-on:click="closeSuccess">OK</el-button>
         </span>
     </el-dialog>
+    <el-dialog
+      title="Upload"
+      :visible.sync="isUploadingRecord"
+      width="80%" center>
+      <el-upload class="form-item" drag action=""
+                 :auto-upload="false"
+                 :show-file-list="false"
+                 :multiple="false"
+                 :on-change="file => fileUploadHandler(file, editingRecord.tableType, editingRecord.versionId)"
+                 :disabled="editingRecord.mappingFinished"
+      >
+      </el-upload>
+      <el-button
+          icon="el-icon-upload2"
+          type="primary"
+          v-on:click="submitMapping()"
+          :disabled="!editingRecord.mappingFinished"
+      >Upload Data</el-button>
+    </el-dialog>
     <h1 class="alignLeft">My Data</h1>
     <el-button class="alignRight" type="primary" icon="el-icon-plus"
            v-if="!isDataListEmpty" @click="handleImportData">Import Data</el-button>
@@ -42,23 +61,13 @@
                 <el-input v-if="version === editingVersion" v-model="conferenceYear" placeholder="Year" class="card-title"></el-input>
               </span>
               <span class="card-title">
-                <el-dropdown>
+                <el-dropdown @command="command => uploadRecord(version, command)">
                   <el-button type="success" :disabled="allRecords.filter(x => !getFileTypes(version).includes(x)).length === 0">
                     Upload<i class="el-icon-arrow-down el-icon--right"></i>
                   </el-button>
-                  <el-dropdown-menu slot="dropdown">
                     <el-dropdown-item v-for="record in allRecords.filter(x => !getFileTypes(version).includes(x))" :key="record" :command="record">
-                      <el-upload class="form-item" drag action=""
-                                 :auto-upload="false"
-                                 :show-file-list="false"
-                                 :multiple="false"
-                                 :on-change="file => fileUploadHandler(file, record.tableType, version)"
-                                 :disabled="record.mappingFinished"
-                      >
                       {{record}}
-                      </el-upload>
                     </el-dropdown-item>
-                  </el-dropdown-menu>
                 </el-dropdown>
                 <el-button-group>
                   <el-button v-if="version !== editingVersion" type="primary" @click="() => {editingVersion = version; editedVersionName = version;}" icon="el-icon-edit">
@@ -107,6 +116,12 @@ export default {
       editingVersion: "",
       editedVersionName: "_",
       allRecords: ["AuthorRecord", "SubmissionRecord", "ReviewRecord"],
+      isUploadingRecord: false,
+      editingRecord: {
+        mappingFinished: false,
+        tableType: 0,
+        versionId: ""
+      }
     }
   },
   beforeCreate() {
@@ -197,7 +212,7 @@ export default {
     deleteAllRecords(versionId) {
       return this.$store.dispatch("deleteVersion", versionId);
     },
-    fileUploadHandler: function (file, idx, version) {
+    fileUploadHandler(file, idx, version) {
       // show loading and go parsing
       this.$store.commit("setPageLoadingStatus", true);
       this.$store.commit("setCurrentRecordIndex", idx);
@@ -208,10 +223,28 @@ export default {
         skipEmptyLines: true,
         complete: (result) => {
           fileParser.parser.bind(this)(result)
-          if (this.formatType === 3) // show map function dialog for custom format
-            this.showMappingTool = true
+          this.editingRecord.mappingFinished = true;
         }
       });
+    },
+    uploadRecord(versionId, recordType) {
+      switch (recordType) {
+        case 'AuthorRecord':
+          this.editingRecord.tableType = 0;
+          break;
+        case 'ReviewRecord':
+          this.editingRecord.tableType = 1;
+          break;
+        case 'SubmissionRecord':
+          this.editingRecord.tableType = 2;
+          break;
+      }
+      this.editingRecord.versionId = versionId;
+      this.isUploadingRecord = true;
+    },
+    submitMapping() {
+      this.isUploadingRecord = false;
+      this.editingRecord.mappingFinished = false;
       return this.$store.dispatch("persistMappingOldVersion");
     }
   }
