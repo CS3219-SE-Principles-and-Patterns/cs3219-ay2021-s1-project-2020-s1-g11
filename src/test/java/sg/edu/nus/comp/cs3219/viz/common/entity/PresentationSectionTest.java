@@ -5,58 +5,64 @@ import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.*;
 
+/**
+ * SUT: {@link PresentationSection}
+ */
 class PresentationSectionTest {
+
+    private PresentationSection entity;
 
     @BeforeEach
     void setUp() {
+        entity = new PresentationSection();
     }
 
     @Test
-    void getId() {
+    void get_set_Id() {
+        Long id = 1L;
+        assertNull(entity.getId());
+        entity.setId(id);
+        assertEquals(id, entity.getId());
     }
 
     @Test
-    void setId() {
+    void get_set_Presentation() {
+        Presentation test = new Presentation();
+        assertNull(entity.getPresentation());
+        entity.setPresentation(test);
+        assertEquals(test, entity.getPresentation());
     }
 
     @Test
-    void getPresentation() {
+    void get_set_Title() {
+        String test = "test";
+        assertNull(entity.getTitle());
+        entity.setTitle(test);
+        assertEquals(test, entity.getTitle());
     }
 
     @Test
-    void setPresentation() {
+    void get_set_Description() {
+        String test = "test";
+        assertNull(entity.getDescription());
+        entity.setDescription(test);
+        assertEquals(test, entity.getDescription());
     }
 
     @Test
-    void getTitle() {
+    void get_set_Type() {
+        String test = "test";
+        assertNull(entity.getType());
+        entity.setType(test);
+        assertEquals(test, entity.getType());
     }
 
     @Test
-    void setTitle() {
-    }
-
-    @Test
-    void getDescription() {
-    }
-
-    @Test
-    void setDescription() {
-    }
-
-    @Test
-    void getType() {
-    }
-
-    @Test
-    void setType() {
-    }
-
-    @Test
-    void getDataSet() {
-    }
-
-    @Test
-    void setDataSet() {
+    void get_set_DataSet() {
+        String test = "test";
+        assertNull(entity.getDataSet());
+        entity.setDataSet(test);
+        assertEquals(test, entity.getDataSet());
     }
 
     @Test
