@@ -19,7 +19,6 @@ exports[`EmptySection.vue renders correctly 1`] = `
         gutter="16"
         justify="center"
         tag="div"
-        type="flex"
       >
         <zoom-x-transition-stub
           delay="600"
@@ -29,6 +28,7 @@ exports[`EmptySection.vue renders correctly 1`] = `
           tag="span"
         >
           <el-col-stub
+            class="hidden-sm-and-down"
             lg="8"
             md="8"
             sm="24"
@@ -135,6 +135,12 @@ exports[`EmptySection.vue renders correctly 1`] = `
           </el-col-stub>
         </zoom-x-transition-stub>
       </el-row-stub>
+       
+      <span
+        class="hidden-md-and-up"
+      >
+        *For data import and management, please use the desktop site.
+      </span>
     </div>
   </div>
 </el-main-stub>

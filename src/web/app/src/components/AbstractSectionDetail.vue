@@ -34,13 +34,13 @@
           type="error">
         </el-alert>
       </div>
-    </div>      
-    <div v-else>
+    </div>
+    <!-- <div v-else>
       <el-alert
         :title="`Unexpected version`"
         type="error">
       </el-alert>
-    </div>
+    </div> -->
   </el-row>
 </template>
 
