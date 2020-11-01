@@ -12,7 +12,7 @@
         <i class="el-icon-user-solid"></i> 
         <span class="hidden-sm-and-down">{{ userNickname }}</span>
       </template>
-      <el-menu-item index="/data" :disabled="!isLogin">
+      <el-menu-item class="hidden-sm-and-down" index="/data" :disabled="!isLogin">
         <i class="el-icon-files"></i>
         My Data
       </el-menu-item>
@@ -32,7 +32,7 @@
     </el-submenu>
     <el-menu-item class="login-button" index="/login" v-if="!isLogin" :disabled="isApiError" @click="login"
                   v-loading.fullscreen.lock="isFullscreenLoading">
-      <i class="el-icon-user-solid"></i>
+      <i class="hidden-sm-and-down el-icon-user-solid"></i>
       Login
     </el-menu-item>
     <el-menu-item class="user-guide-button" index="/userGuide" :disabled="isApiError">

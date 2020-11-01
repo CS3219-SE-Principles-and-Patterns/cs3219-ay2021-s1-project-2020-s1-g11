@@ -34,7 +34,7 @@
         <h1> Exploring Chairvise </h1>
         <el-row :gutter="16" align="middle" justify="center">
           <zoom-x-transition :duration="500" :delay="600">
-            <el-col :sm="24" :md="8" :lg="8" :xl="8" v-show="show">
+            <el-col :sm="24" :md="8" :lg="8" :xl="8" v-show="show" class="hidden-sm-and-down">
               <el-card shadow="hover" class="feature-card">
                 <img src="@/assets/upload.png"/>             
                 <el-button type="primary" class="button" @click="importData">
@@ -64,6 +64,7 @@
             </el-col>
           </zoom-x-transition>
         </el-row>
+        <span class="hidden-md-and-up">*For data import and management, please use the desktop site.</span>
       </div>
     </div>
   </el-main>
