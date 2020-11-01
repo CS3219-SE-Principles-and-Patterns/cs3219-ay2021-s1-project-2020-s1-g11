@@ -65,9 +65,11 @@
                   <el-button type="success" :disabled="allRecords.filter(x => !getFileTypes(version).includes(x)).length === 0">
                     Upload<i class="el-icon-arrow-down el-icon--right"></i>
                   </el-button>
+                  <el-dropdown-menu slot="dropdown">
                     <el-dropdown-item v-for="record in allRecords.filter(x => !getFileTypes(version).includes(x))" :key="record" :command="record">
                       {{record}}
                     </el-dropdown-item>
+                  </el-dropdown-menu>
                 </el-dropdown>
                 <el-button-group>
                   <el-button v-if="version !== editingVersion" type="primary" @click="() => {editingVersion = version; editedVersionName = version;}" icon="el-icon-edit">
