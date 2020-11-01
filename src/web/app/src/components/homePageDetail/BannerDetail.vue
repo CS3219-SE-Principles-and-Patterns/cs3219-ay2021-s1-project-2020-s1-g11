@@ -3,11 +3,16 @@
     <zoom-center-transition :duration="500">      
       <el-row>
         <div v-show="show">
+          <h2 class="hidden-md-and-up title-mobile"> 
+            ChairVisE
+          </h2>
           <el-col :span="6">
             <img alt="Vue logo" src="@/assets/chair2.png"/>
           </el-col>
-          <el-col :span="18">
-            <h2> ChairVisE -- The Conference Data Visualisation Management System </h2>
+          <el-col class="hidden-sm-and-down" :span="18">
+            <h2> 
+              ChairVisE - The Conference Data Visualisation Management System
+            </h2>
           </el-col>
         </div>
       </el-row>
@@ -51,5 +56,10 @@
   .el-row {    
     background: #1e9fc4;
     padding: 32px;
+  }
+
+  .title-mobile {
+    position: absolute;
+    margin-left: 180px;
   }
 </style>

@@ -43,42 +43,69 @@
 </script>
 
 <style>
-  @import url('https://fonts.googleapis.com/css?family=Montserrat:300,400,500');
+@import url('https://fonts.googleapis.com/css?family=Montserrat:300,400,500');
 
-  body {
-    font-family: 'Montserrat', sans-serif;
+body {
+  font-family: 'Montserrat', sans-serif;
 
-    /* try 1 */ /*
-    background-color: #A8D0e6;
-    color: #ffffff;
-    */
+  /* try 1 */ /*
+  background-color: #A8D0e6;
+  color: #ffffff;
+  */
 
-    /* try 2 */ /*
-    background: radial-gradient(#D8F2f2, #88BDBC);
-    color: #ffffff;
-    */
-    
-    /* current */ 
-    /*background: #1e9fc4;*/
-    color: #303133;
-    
-    margin: 0;
-  }
-
-  .fade-enter-active, .fade-leave-active {
-    transition-property: opacity;
-    transition-duration: .25s;
-  }
-
-  .fade-enter-active {
-    transition-delay: .5s;
-  }
-
-  .fade-enter, .fade-leave-active {
-    opacity: 0
-  }
+  /* try 2 */ /*
+  background: radial-gradient(#D8F2f2, #88BDBC);
+  color: #ffffff;
+  */
   
-  .el-dialog__body {
-    word-break: normal !important;
+  /* current */ 
+  /*background: #1e9fc4;*/
+  color: #303133;
+  
+  margin: 0;
+}
+
+.fade-enter-active, .fade-leave-active {
+  transition-property: opacity;
+  transition-duration: .25s;
+}
+
+.fade-enter-active {
+  transition-delay: .5s;
+}
+
+.fade-enter, .fade-leave-active {
+  opacity: 0;
+}
+
+.el-dialog__body {
+  word-break: normal !important;
+}
+
+@media (max-width: 991px) { 
+  .el-dialog {
+    width: 80% !important;
   }
+
+  .el-main {
+    padding: 0px !important;
+  }
+
+  /* .el-form-item {
+    margin-bottom: 0px !important;
+  } */
+
+  .el-form-item .el-form-item__label {
+    padding: 0px !important;
+  }
+
+  .el-select-dropdown {
+    max-width: 100% !important;
+  }
+
+  h1 {
+    margin-left: 5px !important;
+    margin-top: 5px !important;
+  }
+}
 </style>

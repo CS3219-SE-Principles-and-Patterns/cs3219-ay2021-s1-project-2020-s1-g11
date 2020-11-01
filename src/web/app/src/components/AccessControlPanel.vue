@@ -1,7 +1,7 @@
 <template>
   <div v-loading="isAccessControlPanelLoading">
     <h4>Shareable Link</h4>
-    <el-input
+    <el-input class="hidden-sm-and-down"
       :value="currentUrl"
       @focus="$event.target.select()">
       <template slot="prepend">Any one with the link</template>
@@ -10,6 +10,17 @@
           <el-option label="Cannot Access" value="OFF"></el-option>
           <el-option label="Can View" value="CAN_READ"></el-option>
           <el-option label="Can Edit" value="CAN_WRITE"></el-option>
+        </el-select>
+      </template>
+    </el-input>
+    <el-input class="hidden-md-and-up"
+      :value="currentUrl"
+      @focus="$event.target.select()">
+      <template slot="append">
+        <el-select :value="publicAccessLevel" @change="modifyPublicAccessControl($event)" style="width: 80px">
+          <el-option label="Off" value="OFF"></el-option>
+          <el-option label="View" value="CAN_READ"></el-option>
+          <el-option label="Edit" value="CAN_WRITE"></el-option>
         </el-select>
       </template>
     </el-input>
@@ -40,7 +51,7 @@
     <h4>Add New Access Control</h4>
     <el-alert v-if="isAccessControlFormApiError" :title="accessControlFormApiErrorMsg" type="error" show-icon
               class="errorAlert"/>
-    <el-form ref="accessControlForm" label-position="left" label-width="120px" :model="accessControlForm"
+    <el-form ref="accessControlForm" :label-position="isMobile ? 'top' : 'left'" label-width="120px" :model="accessControlForm"
              :rules="accessControlFormRule">
       <el-form-item label="Email address" prop="userIdentifier">
         <el-input v-model="accessControlFormUserIdentifier" placeholder="Email of the user to share"></el-input>
@@ -175,6 +186,9 @@
             value
           })
         },
+      },
+      isMobile() {
+        return window.innerWidth <= 991;
       },
     },
 
