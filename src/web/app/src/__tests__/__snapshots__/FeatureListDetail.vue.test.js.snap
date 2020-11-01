@@ -19,7 +19,6 @@ exports[`EmptySection.vue renders correctly 1`] = `
         gutter="16"
         justify="center"
         tag="div"
-        type="flex"
       >
         <zoom-x-transition-stub
           delay="600"

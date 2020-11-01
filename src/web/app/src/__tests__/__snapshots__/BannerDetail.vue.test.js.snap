@@ -17,6 +17,14 @@ exports[`BannerDetail.vue renders correctly 1`] = `
       <div
         style="display: none;"
       >
+        <h2
+          class="hidden-md-and-up title-mobile"
+        >
+           
+          ChairVisE
+        
+        </h2>
+         
         <el-col-stub
           span="6"
           tag="div"
@@ -28,11 +36,14 @@ exports[`BannerDetail.vue renders correctly 1`] = `
         </el-col-stub>
          
         <el-col-stub
+          class="hidden-sm-and-down"
           span="18"
           tag="div"
         >
           <h2>
-             ChairVisE -- The Conference Data Visualisation Management System 
+             
+            ChairVisE - The Conference Data Visualisation Management System
+          
           </h2>
         </el-col-stub>
       </div>
