@@ -242,7 +242,7 @@
         this.$store.dispatch("persistMappingNewVersion");
       },
       closeSuccess: function () {
-        this.$router.push({ name: 'home' })
+        this.$router.push({ name: 'data' })
         this.$store.commit("setUploadSuccess", false);
         this.$store.commit('initDataRecords', this.$store.state.dbMetaData.entities);
         this.$store.commit("clearVersionId");
