@@ -52,7 +52,7 @@ exports[`EmptySection.vue renders correctly 1`] = `
                 type="primary"
               >
                 
-                Import Data
+                Manage Data
               
               </el-button-stub>
             </el-card-stub>
