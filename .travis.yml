@@ -30,7 +30,7 @@ before_script:
 
 script:
 # lint and test front end
-- cd $frontendBuildPath && npm install && npm run lint && npm run test:unit && COVERALLS_FLAG_NAME=frontend npm run coveralls
+- cd $frontendBuildPath && npm install && npm run lint && npm run test:unit #&& COVERALLS_FLAG_NAME=frontend npm run coveralls
 
 # build production files of frontend
 - cd $frontendBuildPath && npm run build
