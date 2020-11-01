@@ -1,0 +1,42 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`BannerDetail.vue renders correctly 1`] = `
+<div>
+  <zoom-center-transition-stub
+    delay="0"
+    duration="500"
+    origin=""
+    styles="[object Object]"
+    tag="span"
+  >
+    <el-row-stub
+      align="top"
+      justify="start"
+      tag="div"
+    >
+      <div
+        style="display: none;"
+      >
+        <el-col-stub
+          span="6"
+          tag="div"
+        >
+          <img
+            alt="Vue logo"
+            src="@/assets/chair2.png"
+          />
+        </el-col-stub>
+         
+        <el-col-stub
+          span="18"
+          tag="div"
+        >
+          <h2>
+             ChairVisE -- The Conference Data Visualisation Management System 
+          </h2>
+        </el-col-stub>
+      </div>
+    </el-row-stub>
+  </zoom-center-transition-stub>
+</div>
+`;
