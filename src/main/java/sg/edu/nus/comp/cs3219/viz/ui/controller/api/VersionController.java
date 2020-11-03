@@ -58,7 +58,7 @@ public class VersionController extends BaseRestController{
     @PutMapping("/version/{old_versionId}")
     public ResponseEntity<?> editVersionId(@PathVariable String old_versionId, @RequestBody String new_versionId) throws URISyntaxException {
         UserInfo userInfo = gateKeeper.verifyLoginAccess();
-        System.out.print("edit Controller.\n\n\\n");
+        
         Boolean editSuccess = this.versionLogic.editVersionId(userInfo.getUserEmail(), old_versionId, new_versionId);
         
         if (editSuccess) {

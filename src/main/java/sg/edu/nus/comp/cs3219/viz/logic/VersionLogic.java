@@ -34,7 +34,6 @@ public class VersionLogic {
     }
 
     public Boolean editVersionId(String dataSet, String old_versionId, String new_versionId) {
-        System.out.print("edit Logic\n\n\n\n");
         editVersionRecordIfExist(dataSet, "AuthorRecord", old_versionId, new_versionId);
         editVersionRecordIfExist(dataSet, "ReviewRecord", old_versionId, new_versionId);
         editVersionRecordIfExist(dataSet, "SubmissionRecord", old_versionId, new_versionId);
@@ -46,25 +45,19 @@ public class VersionLogic {
         new_versionPk.setVersionId(new_versionId);
         new_versionPk.setDataSet(dataSet);
         new_versionPk.setRecordType(recordType);
+        Version newVersion = new Version(new_versionPk);
+
         if (versionRepository.existsById(new_versionPk)) {
-            System.out.print("new_versionId already exists. \n\n\n\n");
             return false;
-        } 
+        }
         
         Version.VersionPk old_versionPk = new Version.VersionPk();
         old_versionPk.setVersionId(old_versionId);
         old_versionPk.setDataSet(dataSet);
         old_versionPk.setRecordType(recordType);
-        Version versionToEdit;
-        
-        try {
-            versionToEdit = versionRepository.getOne(old_versionPk);
-        } catch(Exception e) {
-            System.out.print("could not get old_versionPk. \n\n\n\n");
-            return false;
-        }
+        versionRepository.deleteById(old_versionPk);
 
-        versionToEdit.setId(new_versionPk);
+        versionRepository.save(newVersion);
         return true;
     }
 
