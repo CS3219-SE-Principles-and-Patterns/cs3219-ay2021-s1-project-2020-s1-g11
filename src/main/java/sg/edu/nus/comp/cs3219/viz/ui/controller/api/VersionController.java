@@ -86,8 +86,18 @@ public class VersionController extends BaseRestController{
     @DeleteMapping("/version/{recordType}/{versionId}")
     public ResponseEntity<Void> deleteVersionRecord(@PathVariable String recordType, @PathVariable String versionId) {
         UserInfo userInfo = gateKeeper.verifyLoginAccess();
-
-        Boolean deleteSuccess = this.versionLogic.deleteVersionRecord(userInfo.getUserEmail(), recordType, versionId);
+        Boolean deleteSuccess = false;
+        switch (recordType) {
+            case "author":
+                deleteSuccess = this.versionLogic.deleteVersionRecord(userInfo.getUserEmail(), "AuthorRecord", versionId);
+                break;
+            case "review":
+                deleteSuccess = this.versionLogic.deleteVersionRecord(userInfo.getUserEmail(), "ReviewRecord", versionId);
+                break;
+            case "submission":
+                deleteSuccess = this.versionLogic.deleteVersionRecord(userInfo.getUserEmail(), "SubmissionRecord", versionId);
+                break;
+        }
 
         if (deleteSuccess) {
             return ResponseEntity.ok().build();
