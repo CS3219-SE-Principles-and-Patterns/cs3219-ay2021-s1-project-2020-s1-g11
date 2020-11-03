@@ -33,16 +33,6 @@ public class VersionLogic {
         return versionRepository.save(newVersion);
     }
 
-    public Version saveForUser(String versionId, String dataSet) {
-        Version newVersion = new Version();
-        Version.VersionPk newVersionPk = new Version.VersionPk();
-        newVersionPk.setVersionId(versionId);
-        newVersionPk.setDataSet(dataSet);
-        newVersion.setId(newVersionPk);
-
-        return versionRepository.save(newVersion);
-    }
-
     public Boolean editVersionId(String dataSet, String old_versionId, String new_versionId) {
         Version.VersionPk new_versionPk = new Version.VersionPk();
         new_versionPk.setVersionId(new_versionId);
@@ -66,11 +56,27 @@ public class VersionLogic {
         return true;
     }
 
-    public Boolean deleteVersion(String dataSet, String versionId) {
-        Version.VersionPk versionPk = new Version.VersionPk();
-        versionPk.setVersionId(versionId);
-        versionPk.setDataSet(dataSet);
-        versionRepository.deleteById(versionPk);
-        return true;
+    public void deleteAuthorRecordFromVersion(String dataSet, String versionId) {
+        Version.VersionPk versionID = new Version.VersionPk();
+        versionID.setDataSet(dataSet);
+        versionID.setRecordType("AuthorRecord");
+        versionID.setVersionId(versionId);
+        versionRepository.deleteById(versionID);
+    }
+
+    public void deleteReviewRecordFromVersion(String dataSet, String versionId) {
+        Version.VersionPk versionID = new Version.VersionPk();
+        versionID.setDataSet(dataSet);
+        versionID.setRecordType("ReviewRecord");
+        versionID.setVersionId(versionId);
+        versionRepository.deleteById(versionID);
+    }
+
+    public void deleteSubmissionRecordFromVersion(String dataSet, String versionId) {
+        Version.VersionPk versionID = new Version.VersionPk();
+        versionID.setDataSet(dataSet);
+        versionID.setRecordType("SubmissionRecord");
+        versionID.setVersionId(versionId);
+        versionRepository.deleteById(versionID);
     }
 }

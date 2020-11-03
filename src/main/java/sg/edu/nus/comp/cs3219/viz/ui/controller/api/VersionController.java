@@ -69,6 +69,7 @@ public class VersionController extends BaseRestController{
         }
     }
 
+    /*
     @DeleteMapping("/version/{versionId}")
     public ResponseEntity<Void> deleteVersion(@PathVariable String versionId) {
         UserInfo userInfo = gateKeeper.verifyLoginAccess();
@@ -81,5 +82,33 @@ public class VersionController extends BaseRestController{
         else {
             return ResponseEntity.notFound().build();
         }
+    }
+    */
+
+    @DeleteMapping("/version/author/{versionId}")
+    public ResponseEntity<Void> deleteAuthorRecordFromVersion(@PathVariable String versionId) {
+        UserInfo userInfo = gateKeeper.verifyLoginAccess();
+
+        this.versionLogic.deleteAuthorRecordFromVersion(userInfo.getUserEmail(), versionId);
+
+        return ResponseEntity.ok().build();
+    }
+
+    @DeleteMapping("/version/review/{versionId}")
+    public ResponseEntity<Void> deleteReviewRecordFromVersion(@PathVariable String versionId) {
+        UserInfo userInfo = gateKeeper.verifyLoginAccess();
+
+        this.versionLogic.deleteReviewRecordFromVersion(userInfo.getUserEmail(), versionId);
+
+        return ResponseEntity.ok().build();
+    }
+
+    @DeleteMapping("/version/submission/{versionId}")
+    public ResponseEntity<Void> deleteSubmissionRecordFromVersion(@PathVariable String versionId) {
+        UserInfo userInfo = gateKeeper.verifyLoginAccess();
+
+        this.versionLogic.deleteSubmissionRecordFromVersion(userInfo.getUserEmail(), versionId);
+
+        return ResponseEntity.ok().build();
     }
 }
