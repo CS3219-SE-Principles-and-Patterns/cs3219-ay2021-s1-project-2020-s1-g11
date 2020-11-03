@@ -199,7 +199,7 @@ export default {
     },
     saveNewVersionId(oldVersionId, newVersionId) {
       this.editingVersion = ""
-      return this.$store.dispatch("updateVersion", [oldVersionId, newVersionId]);
+      return this.$store.dispatch("editVersion", [oldVersionId, newVersionId]);
     },
     deleteRecord(versionId, recordType) {
       switch (recordType) {
