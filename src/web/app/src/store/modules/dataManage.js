@@ -31,31 +31,35 @@ export default {
                 })
         },
         async deleteAuthorRecord({commit}, versionId) {
-            axios.delete('/api/record/author/' + versionId)
-                .then(() => {
+            axios.delete('/api/record/author/' + versionId).then(() => {
+                axios.delete('/api/version/author/' + versionId).then(() => {
                     commit('removeRecord', [versionId, 'AuthorRecord'])
                 })
+            })
         },
         async deleteReviewRecord({commit}, versionId) {
-            axios.delete('/api/record/review/' + versionId)
-                .then(() => {
+            axios.delete('/api/record/review/' + versionId).then(() => {
+                axios.delete('/api/version/review/' + versionId).then(() => {
                     commit('removeRecord', [versionId, 'ReviewRecord'])
                 })
+            })
         },
         async deleteSubmissionRecord({commit}, versionId) {
-            axios.delete('/api/record/submission/' + versionId)
-                .then(() => {
+            axios.delete('/api/record/submission/' + versionId).then(() => {
+                axios.delete('/api/version/submission/' + versionId).then(() => {
                     commit('removeRecord', [versionId, 'SubmissionRecord'])
                 })
+            })
         },
         async deleteVersion({commit}, versionId) {
             await axios.all([
-                axios.delete('/api/version/' + versionId),
                 axios.delete('/api/record/submission/' + versionId),
                 axios.delete('/api/record/review/' + versionId),
                 axios.delete('/api/record/author/' + versionId)
             ]).then(() => {
-                commit('removeVersion', versionId)
+                axios.delete('/api/version/' + versionId).then(() => {
+                    commit('removeVersion', versionId)
+                })
             })
         },
         async updateVersion({commit}, payload) {

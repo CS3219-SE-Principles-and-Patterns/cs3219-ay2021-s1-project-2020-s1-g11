@@ -73,4 +73,13 @@ public class VersionLogic {
         versionRepository.deleteById(versionPk);
         return true;
     }
+
+    public Boolean deleteVersionRecord(String dataSet, String recordType, String versionId) {
+        Version.VersionPk versionPk = new Version.VersionPk();
+        versionPk.setVersionId(versionId);
+        versionPk.setDataSet(dataSet);
+        versionPk.setRecordType(recordType);
+        versionRepository.deleteById(versionPk);
+        return true;
+    }
 }

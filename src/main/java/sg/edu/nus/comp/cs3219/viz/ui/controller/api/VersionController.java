@@ -82,4 +82,18 @@ public class VersionController extends BaseRestController{
             return ResponseEntity.notFound().build();
         }
     }
+
+    @DeleteMapping("/version/{recordType}/{versionId}")
+    public ResponseEntity<Void> deleteVersionRecord(@PathVariable String recordType, @PathVariable String versionId) {
+        UserInfo userInfo = gateKeeper.verifyLoginAccess();
+
+        Boolean deleteSuccess = this.versionLogic.deleteVersionRecord(userInfo.getUserEmail(), recordType, versionId);
+
+        if (deleteSuccess) {
+            return ResponseEntity.ok().build();
+        }
+        else {
+            return ResponseEntity.notFound().build();
+        }
+    }
 }
