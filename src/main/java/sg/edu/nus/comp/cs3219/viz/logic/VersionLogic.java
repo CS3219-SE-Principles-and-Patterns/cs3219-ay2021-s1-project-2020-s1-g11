@@ -33,45 +33,49 @@ public class VersionLogic {
         return versionRepository.save(newVersion);
     }
 
-    public Version saveForUser(String versionId, String dataSet) {
-        Version newVersion = new Version();
-        Version.VersionPk newVersionPk = new Version.VersionPk();
-        newVersionPk.setVersionId(versionId);
-        newVersionPk.setDataSet(dataSet);
-        newVersion.setId(newVersionPk);
-
-        return versionRepository.save(newVersion);
+    public Boolean editVersionId(String dataSet, String old_versionId, String new_versionId) {
+        editVersionRecordIfExist(dataSet, "AuthorRecord", old_versionId, new_versionId);
+        editVersionRecordIfExist(dataSet, "ReviewRecord", old_versionId, new_versionId);
+        editVersionRecordIfExist(dataSet, "SubmissionRecord", old_versionId, new_versionId);
+        return true;
     }
 
-    public Boolean editVersionId(String dataSet, String old_versionId, String new_versionId) {
+    public Boolean editVersionRecordIfExist(String dataSet, String recordType, String old_versionId, String new_versionId) {
         Version.VersionPk new_versionPk = new Version.VersionPk();
         new_versionPk.setVersionId(new_versionId);
         new_versionPk.setDataSet(dataSet);
+        new_versionPk.setRecordType(recordType);
+        Version newVersion = new Version(new_versionPk);
+
         if (versionRepository.existsById(new_versionPk)) {
             return false;
-        } 
+        }
         
         Version.VersionPk old_versionPk = new Version.VersionPk();
         old_versionPk.setVersionId(old_versionId);
         old_versionPk.setDataSet(dataSet);
-        Version versionToEdit;
-        
-        try {
-            versionToEdit = versionRepository.getOne(old_versionPk);
-        } catch(Exception e) {
-            return false;
-        }
+        old_versionPk.setRecordType(recordType);
+        versionRepository.deleteById(old_versionPk);
 
-        versionToEdit.setId(new_versionPk);
+        versionRepository.save(newVersion);
         return true;
     }
 
     public Boolean deleteVersion(String dataSet, String versionId) {
+        deleteVersionRecordIfExist(dataSet, "AuthorRecord", versionId);
+        deleteVersionRecordIfExist(dataSet, "ReviewRecord", versionId);
+        deleteVersionRecordIfExist(dataSet, "SubmissionRecord", versionId);
+        return true;
+    }
+
+    public void deleteVersionRecordIfExist(String dataSet, String recordType, String versionId) {
         Version.VersionPk versionPk = new Version.VersionPk();
         versionPk.setVersionId(versionId);
         versionPk.setDataSet(dataSet);
-        versionRepository.deleteById(versionPk);
-        return true;
+        versionPk.setRecordType(recordType);
+        if (versionRepository.existsById(versionPk)) {
+            versionRepository.deleteById(versionPk);
+        }
     }
 
     public Boolean deleteVersionRecord(String dataSet, String recordType, String versionId) {
