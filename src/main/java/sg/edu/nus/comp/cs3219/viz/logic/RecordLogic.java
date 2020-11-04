@@ -128,7 +128,7 @@ public class RecordLogic {
         submissionRecordRepository.deleteAllByVersionEquals(versionToDelete);
     }
 
-    @Transactional 
+    @Transactional
     public void editVersionId(String dataSet, String old_versionId, String new_versionId) {
         Version oldAuthorVersion = new Version(new Version.VersionPk(dataSet, "AuthorRecord", old_versionId));
         Version oldReviewVersion = new Version(new Version.VersionPk(dataSet, "ReviewRecord", old_versionId));
@@ -139,6 +139,9 @@ public class RecordLogic {
 
         // Author
         List<AuthorRecord> authorRecordList = new ArrayList<AuthorRecord>(authorRecordRepository.findByVersionEquals(oldAuthorVersion));
+        // for (AuthorRecord authorRecord : authorRecordList) {
+        //     authorRecord.setVersion(newAuthorVersion);
+        // }
         authorRecordRepository.deleteAllByVersionEquals(oldAuthorVersion);
         authorRecordRepository.saveAll(authorRecordList.stream().peek(r -> {
             r.setId(null);
