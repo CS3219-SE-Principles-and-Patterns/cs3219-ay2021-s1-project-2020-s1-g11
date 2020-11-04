@@ -19,7 +19,7 @@ export default {
     actions: {
         async getVersionList({commit}) {
             commit('setPresentationListLoading', true);
-            axios.get('/api/version')
+            await axios.get('/api/version')
                 .then(response => {
                     commit('setVersionList', response.data)
                 })
@@ -31,21 +31,21 @@ export default {
                 })
         },
         async deleteAuthorRecord({commit}, versionId) {
-            axios.delete('/api/record/author/' + versionId).then(() => {
+            await axios.delete('/api/record/author/' + versionId).then(() => {
                 axios.delete('/api/version/author/' + versionId).then(() => {
                     commit('removeRecord', [versionId, 'AuthorRecord'])
                 })
             })
         },
         async deleteReviewRecord({commit}, versionId) {
-            axios.delete('/api/record/review/' + versionId).then(() => {
+            await axios.delete('/api/record/review/' + versionId).then(() => {
                 axios.delete('/api/version/review/' + versionId).then(() => {
                     commit('removeRecord', [versionId, 'ReviewRecord'])
                 })
             })
         },
         async deleteSubmissionRecord({commit}, versionId) {
-            axios.delete('/api/record/submission/' + versionId).then(() => {
+            await axios.delete('/api/record/submission/' + versionId).then(() => {
                 axios.delete('/api/version/submission/' + versionId).then(() => {
                     commit('removeRecord', [versionId, 'SubmissionRecord'])
                 })
@@ -64,11 +64,16 @@ export default {
         },
         async editVersion({commit}, payload) {
             await axios.all([
-                axios.put('/api/record/' + payload[0], {new_versionId: payload[1]}),
-                axios.put('/api/version/' + payload[0], {new_versionId: payload[1]})
+                axios.post('/api/version', {versionId: payload[1], recordType: "AuthorRecord"}),
+                axios.post('/api/version', {versionId: payload[1], recordType: "ReviewRecord"}),
+                axios.post('/api/version', {versionId: payload[1], recordType: "SubmissionRecord"}),
             ]).then(() => {
-                axios.get('/api/version').then(response => {
-                    commit('setVersionList', response.data)
+                axios.put('/api/record/' + payload[0], {new_versionId: payload[1]}).then(() => {
+                    axios.delete('/api/version/' + payload[0]).then(() => {
+                        axios.get('/api/version').then(response => {
+                            commit('setVersionList', response.data)
+                        })
+                    })
                 })
             })
         },
