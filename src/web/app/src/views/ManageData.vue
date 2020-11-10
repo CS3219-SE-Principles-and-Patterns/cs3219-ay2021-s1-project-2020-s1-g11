@@ -8,13 +8,6 @@
     </el-alert>
     <div v-if="isLogin">
     <el-dialog
-        :title="dbSchemas.length === 0 ? '' : dbSchemas[currentRecordIndex].name"
-        :visible.sync="showMappingTool"
-        width="80%"
-        :show-close="false">
-      <mapping-tool ref="mapTool" v-on:close-dialog="showMappingTool = false"></mapping-tool>
-    </el-dialog>
-    <el-dialog
         title="Success"
         :visible.sync="uploadSuccess"
         width="30%" center>
@@ -27,6 +20,7 @@
       title="Upload"
       :visible.sync="isUploadingRecord"
       width="80%" center>
+      <label class="label">{{ dbSchemas.length === 0 ? " " : dbSchemas[this.editingRecord.tableType].name }}</label>
       <el-upload class="form-item" drag action=""
                  :auto-upload="false"
                  :show-file-list="false"
@@ -34,13 +28,11 @@
                  :on-change="file => fileUploadHandler(file, editingRecord.tableType, editingRecord.versionId)"
                  :disabled="editingRecord.mappingFinished"
       >
+        <div>
+          <i class="el-icon-upload"></i>
+          <div class="el-upload__text">Drop .csv file here or <em>click to upload</em></div>
+        </div>
       </el-upload>
-      <el-button
-          icon="el-icon-upload2"
-          type="primary"
-          v-on:click="submitMapping()"
-          :disabled="!editingRecord.mappingFinished"
-      >Upload Data</el-button>
     </el-dialog>
     <h1 class="alignLeft">My Data</h1>
     <el-button class="alignRight" type="primary" icon="el-icon-plus"
@@ -125,6 +117,7 @@ export default {
   },
   data() {
     return {
+      showMappingTool: false,
       editingVersion: "",
       editedVersionName: "_",
       allRecords: ["AuthorRecord", "SubmissionRecord", "ReviewRecord"],
@@ -137,6 +130,7 @@ export default {
     }
   },
   beforeCreate() {
+    this.$store.dispatch('fetchDBMetaDataEntities');
     this.$store.dispatch('getVersionList');
   },
   computed: {
@@ -193,6 +187,7 @@ export default {
   },
   methods: {
     closeSuccess: function () {
+      this.isUploadingRecord = false;
       this.$store.commit("setUploadSuccess", false);
       this.$store.commit('initDataRecords', this.$store.state.dbMetaData.entities);
       this.$store.commit("clearVersionId");
@@ -235,8 +230,9 @@ export default {
         // ignoring empty lines in csv file
         skipEmptyLines: true,
         complete: (result) => {
-          fileParser.parser.bind(this)(result)
-          this.editingRecord.mappingFinished = true;
+          fileParser.parser.bind(this)(result);
+          this.$store.dispatch("persistMappingNewVersion");
+          this.$store.commit("setPageLoadingStatus", false);
         }
       });
     },
@@ -255,11 +251,6 @@ export default {
       this.editingRecord.versionId = versionId;
       this.isUploadingRecord = true;
     },
-    submitMapping() {
-      this.isUploadingRecord = false;
-      this.editingRecord.mappingFinished = false;
-      return this.$store.dispatch("persistMappingOldVersion");
-    }
   }
 }
 </script>
