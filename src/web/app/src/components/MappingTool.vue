@@ -120,19 +120,6 @@ export default {
       });
     },
 
-    // generates imported tags.
-    // if initially no tag, just display column number
-    importList: function () {
-      if (this.$store.state.dataMapping.data.records[this.$store.state.dataMapping.data.currentRecordIndex].hasHeader) {
-        return this.$store.state.dataMapping.data.records[this.$store.state.dataMapping.data.currentRecordIndex].uploadedLabel;
-      }
-      let lst = [];
-      for (let i = 0; i < this.$store.state.dataMapping.data.records[this.$store.state.dataMapping.data.currentRecordIndex].uploadedLabel.length; i++) {
-        lst.push("Column " + (i + 1));
-      }
-      return lst;
-    },
-
     // gets errors
     errors: function () {
       return this.$store.state.dataMapping.error;
