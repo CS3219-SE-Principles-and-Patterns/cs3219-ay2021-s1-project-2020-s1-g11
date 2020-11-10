@@ -37,7 +37,7 @@
       </el-card>
     </el-col>
     <!-- end of left part of the page -->
-    
+
     <!-- right part of the page -->
     <el-col :span="8" :offset="0" class="map-area">
       <el-card>
@@ -225,6 +225,7 @@ export default {
       this.$emit('close-dialog');
     },
     uploadClicked: function () {
+      this.updateMapFunction();
       let map = deepCopy(this.mappedPairs);
       this.$store.commit("setMapping", {"map": map});
       if (this.errors.length === 0) {
