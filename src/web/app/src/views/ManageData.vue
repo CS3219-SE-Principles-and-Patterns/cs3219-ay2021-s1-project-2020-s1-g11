@@ -205,7 +205,7 @@ export default {
       this.$router.push("/importData");
     },
     getFileTypes(versionId) {
-      return this.$store.state.dataManage.versionList.filter(v => v.versionId === versionId).map(v => v.recordType);
+      return this.$store.getters.getFileTypes(versionId);
     },
     saveNewVersionId(oldVersionId, newVersionId) {
       this.editingVersion = ""
