@@ -230,6 +230,7 @@ export default {
       this.$store.commit("setCurrentRecordIndex", idx);
       this.$store.commit("setVersionId", version);
 
+      // TODO: Fix Error Here
       Papa.parse(file.raw, {
         // ignoring empty lines in csv file
         skipEmptyLines: true,
