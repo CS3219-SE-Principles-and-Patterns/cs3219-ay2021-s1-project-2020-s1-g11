@@ -72,9 +72,19 @@
                   </el-dropdown-menu>
                 </el-dropdown>
                 <el-button-group>
-                  <el-button v-if="version !== editingVersion" type="primary" @click="() => {editingVersion = version; editedVersionName = version;}" icon="el-icon-edit">
-                    Edit
-                  </el-button>
+                  <el-tooltip content="Edit is only available if all records are present"
+                              effect="light"
+                              :open-delay="300"
+                              placement="top">
+                    <el-button v-if="version !== editingVersion" type="primary"
+                               @click="() => {
+                                 if (allRecords.filter(x => !getFileTypes(version).includes(x)).length > 0)
+                                   return
+                                 editingVersion = version; editedVersionName = version;
+                               }" icon="el-icon-edit">
+                      Edit
+                    </el-button>
+                  </el-tooltip>
                   <el-button v-if="version === editingVersion" type="primary" @click="saveNewVersionId(editingVersion, editedVersionName)" icon="el-icon-check">
                     Save
                   </el-button>
@@ -220,6 +230,7 @@ export default {
       this.$store.commit("setCurrentRecordIndex", idx);
       this.$store.commit("setVersionId", version);
 
+      // TODO: Fix Error Here
       Papa.parse(file.raw, {
         // ignoring empty lines in csv file
         skipEmptyLines: true,
