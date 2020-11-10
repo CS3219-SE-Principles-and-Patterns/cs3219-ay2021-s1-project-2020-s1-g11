@@ -68,9 +68,6 @@
   export default {
     props: {
       presentationId: String,
-      presentationFormVersion: String,
-      versions: Array,
-      fileTypes: Array,
     },
     watch: {
       presentationId: 'fetchSectionList',
@@ -144,6 +141,15 @@
       },
       isLoadingDBMetaData() {
         return this.$store.state.dbMetaData.entitiesStatus.isLoading
+      },
+      versions() {
+          return this.$store.getters.versionIdList;
+      },
+      presentationFormVersion() {
+        return this.$store.state.presentation.presentationForm.version;
+      },
+      fileTypes() {
+        return this.$store.getters.getFileTypes(this.presentationFormVersion);
       },
     },
     components: {

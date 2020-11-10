@@ -4,6 +4,17 @@ export default {
     state: {
         versionList: [],
     },
+    getters: {
+        versionIdList: state => {
+            return Array.from(new Set(state.versionList.map(v => v.versionId)));
+        },
+        hasVersionData: state => {
+            return state.versionList.length > 0;
+        },
+        getFileTypes: state => versionId => {
+            return state.versionList.filter(v => v.versionId === versionId).map(v => v.recordType);
+        },
+    },
     mutations: {
         setVersionList(state, payload) {
             state.versionList = payload;
