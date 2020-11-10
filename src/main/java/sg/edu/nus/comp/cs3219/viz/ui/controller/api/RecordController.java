@@ -117,10 +117,10 @@ public class RecordController extends BaseRestController {
      * @return ResponseEntity<?>
      * @throws URISyntaxException
      */
-    @PutMapping("/record/{old_versionId}")
-    public ResponseEntity<?> editVersionId(@PathVariable String old_versionId, @RequestBody String new_versionId) throws URISyntaxException {
+    @PutMapping("/record/{old_versionId}/{new_versionId}")
+    public ResponseEntity<?> editVersionId(@PathVariable String old_versionId, @PathVariable String new_versionId) throws URISyntaxException {
         UserInfo userInfo = gateKeeper.verifyLoginAccess();
-
+        
         this.recordLogic.editVersionId(userInfo.getUserEmail(), old_versionId, new_versionId);
 
         return ResponseEntity.ok().build();

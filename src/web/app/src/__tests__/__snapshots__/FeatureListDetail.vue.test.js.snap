@@ -1,0 +1,147 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`EmptySection.vue renders correctly 1`] = `
+<el-main-stub>
+  <div
+    class="page"
+  >
+    <!---->
+     
+    <div
+      class="options-list"
+    >
+      <h1>
+         Exploring Chairvise 
+      </h1>
+       
+      <el-row-stub
+        align="middle"
+        gutter="16"
+        justify="center"
+        tag="div"
+      >
+        <zoom-x-transition-stub
+          delay="600"
+          duration="500"
+          origin=""
+          styles="[object Object]"
+          tag="span"
+        >
+          <el-col-stub
+            class="hidden-sm-and-down"
+            lg="8"
+            md="8"
+            sm="24"
+            span="24"
+            style="display: none;"
+            tag="div"
+            xl="8"
+          >
+            <el-card-stub
+              class="feature-card"
+              shadow="hover"
+            >
+              <img
+                src="@/assets/upload.png"
+              />
+               
+              <el-button-stub
+                class="button"
+                icon=""
+                nativetype="button"
+                type="primary"
+              >
+                
+                Manage Data
+              
+              </el-button-stub>
+            </el-card-stub>
+          </el-col-stub>
+        </zoom-x-transition-stub>
+         
+        <zoom-x-transition-stub
+          delay="600"
+          duration="500"
+          origin=""
+          styles="[object Object]"
+          tag="span"
+        >
+          <el-col-stub
+            lg="8"
+            md="8"
+            sm="24"
+            span="24"
+            style="display: none;"
+            tag="div"
+            xl="8"
+          >
+            <el-card-stub
+              class="feature-card"
+              shadow="hover"
+            >
+              <img
+                src="@/assets/stadistics.png"
+              />
+               
+              <el-button-stub
+                class="button"
+                icon=""
+                nativetype="button"
+                type="primary"
+              >
+                
+                Analyse Data 
+              
+              </el-button-stub>
+            </el-card-stub>
+          </el-col-stub>
+        </zoom-x-transition-stub>
+         
+        <zoom-x-transition-stub
+          delay="600"
+          duration="500"
+          origin=""
+          styles="[object Object]"
+          tag="span"
+        >
+          <el-col-stub
+            lg="8"
+            md="8"
+            sm="24"
+            span="24"
+            style="display: none;"
+            tag="div"
+            xl="8"
+          >
+            <el-card-stub
+              class="feature-card"
+              shadow="hover"
+            >
+              <img
+                src="@/assets/schedule.png"
+              />
+               
+              <el-button-stub
+                class="button"
+                icon=""
+                nativetype="button"
+                type="primary"
+              >
+                
+                Track Conference
+              
+              </el-button-stub>
+            </el-card-stub>
+          </el-col-stub>
+        </zoom-x-transition-stub>
+      </el-row-stub>
+       
+      <span
+        class="hidden-md-and-up"
+      >
+        *For data import and management, please use the desktop site.
+      </span>
+    </div>
+  </div>
+</el-main-stub>
+`;

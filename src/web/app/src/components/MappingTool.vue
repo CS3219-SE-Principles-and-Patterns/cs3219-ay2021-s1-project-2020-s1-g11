@@ -37,7 +37,7 @@
       </el-card>
     </el-col>
     <!-- end of left part of the page -->
-
+    
     <!-- right part of the page -->
     <el-col :span="8" :offset="0" class="map-area">
       <el-card>
@@ -154,6 +154,11 @@ export default {
         const obj = JSON.parse(localStorage.mapFunctionRaw);
         this.mapFunctionRaw = obj[this.currentRecordIndex]
       }
+      let lst = [];
+      for (let i = 0; i < this.$store.state.dataMapping.data.records[this.$store.state.dataMapping.data.currentRecordIndex].uploadedLabel.length; i++) {
+        lst.push("Column " + (i + 1));
+      }
+      return lst;
     },
     errors(newValue) {
       if (newValue.length > 0) {
@@ -168,7 +173,8 @@ export default {
         const obj = JSON.parse(localStorage.mapFunctionRaw);
         obj[this.currentRecordIndex] = mapFunctionRaw
         localStorage.mapFunctionRaw = JSON.stringify(obj)
-      } else
+      }
+      else
         localStorage.mapFunctionRaw = JSON.stringify(["", "", ""])
     }
   },
@@ -220,7 +226,6 @@ export default {
     },
     uploadClicked: function () {
       let map = deepCopy(this.mappedPairs);
-      this.updateMapFunction()
       this.$store.commit("setMapping", {"map": map});
       if (this.errors.length === 0) {
         this.hasSubmitted = true;
@@ -232,7 +237,8 @@ export default {
     if (localStorage.mapFunctionRaw) {
       const obj = JSON.parse(localStorage.mapFunctionRaw);
       this.mapFunctionRaw = obj[this.currentRecordIndex]
-    } else
+    }
+    else
       localStorage.mapFunctionRaw = JSON.stringify(["", "", ""])
   },
   updated() {
@@ -429,9 +435,5 @@ export default {
 .load-default-btn {
   float: right;
   margin: 10px 24px;
-}
-
-.collapse-scroll .el-collapse-item__content {
-  overflow: scroll;
 }
 </style>

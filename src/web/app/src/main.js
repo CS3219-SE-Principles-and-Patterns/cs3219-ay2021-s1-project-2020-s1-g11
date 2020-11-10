@@ -7,6 +7,7 @@ import store from './store'
 import './plugins/element.js'
 //Fade andzoom animation
 import 'element-ui/lib/theme-chalk/base.css';
+import 'element-ui/lib/theme-chalk/display.css';
 import 'fullcalendar/dist/fullcalendar.css'
 
 Vue.use(ElementUI);

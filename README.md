@@ -6,11 +6,9 @@
 ## Overview
 This project is a tool to analyze paper submission information for conferences. It is basically a visualization tool combined with a backend query service.
 
-Production Website at: https://chairvise-4-283411.appspot.com/
+Production Website at: https://cs3219-madanalogy.appspot.com/
 
-Demo video YouTube Link:
-
-Report: Project_Report.pdf
+Code base adapted from: https://github.com/WING-NUS/ChairVisE
 
 ##### Installation Guide
 Pre-requisites: Python 3.8.3, Node 12.18.0, NPM 6.14.4, java 8, MYSQL 5.7

@@ -4,7 +4,7 @@
       <div slot="header" class="clearfix brief-header">
         <span class="brief-title"> Presentation Details </span>
         <span class="brief-title">
-          <el-dropdown @command="download">
+          <el-dropdown @command="download" class="hidden-sm-and-down">
             <el-button type="warning">
               Download<i class="el-icon-arrow-down el-icon--right"></i>
             </el-button>
@@ -16,15 +16,15 @@
           <el-button-group v-if="isLogin && isPresentationEditable">
             <el-button type="primary" @click="changeEditMode(true)" icon="el-icon-edit"
                     :disabled="isInEditMode">
-              Edit
+              <span class="hidden-sm-and-down">Edit</span>
             </el-button>
             <el-button type="success" icon="el-icon-share"
                     @click="openAccessControlPanel()">
-              Share
+              <span class="hidden-sm-and-down">Share</span>
             </el-button>
             <el-button type="danger" v-if="!isNewPresentation"
                     icon="el-icon-delete" @click="() => { showDeleteDialog = true; }">
-              Delete
+              <span class="hidden-sm-and-down">Delete</span>
             </el-button>
           </el-button-group>
           <el-button type="primary" @click="changeEditMode(true)" icon="el-icon-edit"
@@ -35,7 +35,7 @@
       </div>
       <el-row>
         <el-col :span="18">
-          <el-form label-position="left" ref="presentationForm" 
+          <el-form :label-position="isMobile ? 'top' : 'left'" ref="presentationForm" 
                   label-width="150px" :rules="rules"
                   :model="presentationForm" v-loading="isLoading" >
             <el-alert v-if="isError" :title="apiErrorMsg" type="error" show-icon class="errorMsg"/>
@@ -48,8 +48,8 @@
               <el-input v-model="presentationFormName" v-if="isInEditMode"/>
             </el-form-item>
             <el-form-item label="Data Set: " :prop="isInEditMode ? 'dataset' : ''">
-              <span v-if="!isInEditMode">{{ version }}</span>
-              <el-select v-if="isInEditMode" :value="version" v-on:change="e => $emit('version-change', e)" placeholder="Please select a version" >
+              <span v-if="!isInEditMode">{{ presentationForm.version }}</span>
+              <el-select v-if="isInEditMode" :value="presentationForm.version" v-on:change="e => this.presentationFormVersion = e" placeholder="Please select a version" >
                 <el-option v-for="v in versions" :key="v" :label="v" :value="v">
                 </el-option>
               </el-select>
@@ -112,9 +112,6 @@
     name: 'PresentationBrief',
     props: {
       id: String,
-      version: String,
-      versions: Array,
-      fileTypes: Array,
     },
     beforeCreate() {
         this.$store.dispatch('getVersionList');
@@ -140,6 +137,7 @@
           name: this.presentationFormName,
           creatorIdentifier: this.presentationFormCreatorIdentifier,
           description: this.presentationFormDescription,
+          version: this.presentationFormVersion,
         }
       },
       presentationFormName: {
@@ -167,6 +165,23 @@
           })
         },
       },
+      versions() {
+          return this.$store.getters.versionIdList;
+      },
+      presentationFormVersion: {
+          get() {
+              return this.$store.state.presentation.presentationForm.version;
+          },
+          set(value) {
+              this.$store.commit('setPresentationFormField', {
+                  field: 'version',
+                  value
+              });
+          }
+      },
+      fileTypes() {
+        return this.$store.getters.getFileTypes(this.presentationFormVersion);
+      },
       isNewPresentation() {
         return this.id === ID_NEW_PRESENTATION
       },
@@ -181,7 +196,10 @@
       },
       apiErrorMsg() {
         return this.$store.state.presentation.presentationFormStatus.apiErrorMsg
-      }
+      },
+      isMobile() {
+        return window.innerWidth <= 991;
+      },
     },
     data() {
       return {
@@ -395,5 +413,8 @@
   }
   .access-tag {
     margin-left: 8px;
+  }
+  .el-button-group {
+    min-width: 182px;
   }
 </style>

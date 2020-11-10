@@ -2,7 +2,9 @@
   <el-main>
     <h1 class="alignLeft">My Presentations </h1>
     <el-button class="alignRight" type="primary" icon="el-icon-plus"
-           v-if="!isPresentationListEmpty" @click="createPresentation">Add New Presentation</el-button>
+           v-if="!isPresentationListEmpty" @click="createPresentation">
+      <span class="hidden-sm-and-down">Add New Presentation</span>
+    </el-button>
     <br/>
     <el-divider></el-divider>
     <div class="infinite-list-wrapper">
@@ -18,7 +20,7 @@
                 <el-button type="danger" icon="el-icon-delete" @click="event => handleDeleteClicked(event, presentation.id, presentation.name)">Delete</el-button>
               </div>
               <el-row>
-                <el-col :span="3">
+                <el-col :md="3" :sm="24">
                   Data Set:
                 </el-col>
                 <el-col :span="21">
@@ -26,7 +28,7 @@
                 </el-col>
               </el-row>
               <el-row>
-                <el-col :span="3">
+                <el-col :md="3" :sm="24">
                   Description:
                 </el-col>
                 <el-col :span="21">
@@ -121,7 +123,7 @@
         return this.$store.state.presentation.presentationListStatus.isApiError
       },
       hasData: function() {
-        return this.$store.state.dataManage.versionList.length > 0;
+        return this.$store.getters.hasVersionData;
       }
     },
     components: {

@@ -128,8 +128,8 @@
         isEditing: false,
         rules: {
           name: [
-            {required: true, message: 'Please enter conference name', trigger: 'blur'},
-            {min: 3, message: 'The length should be more than 3 character', trigger: 'blur'}
+            {required: true, message: 'Please enter conference name.', trigger: 'blur'},
+            {min: 3, message: 'The length should be more than 3 character.', trigger: 'blur'}
           ]
         }
       }

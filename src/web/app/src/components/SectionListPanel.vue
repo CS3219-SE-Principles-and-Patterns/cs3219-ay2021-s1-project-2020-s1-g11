@@ -1,7 +1,7 @@
 <template>
   <div>
     <div v-loading="isLoadingDBMetaData || isLoadingSectionList" v-if="!isNewPresentation">
-      <el-aside width="300px" class="addRowRightAlign" v-if="isLogin">
+      <el-aside width="300px" class="addRowRightAlign hidden-sm-and-down" v-if="isLogin">
         <el-card class="floating">  
           <div slot="header" class="clearfix">
             <span> Add section </span>
@@ -23,7 +23,7 @@
           <el-button class="selectionInputButton" icon="el-icon-plus" type="success" @click="addNewSection">Add New Section</el-button>
         </el-card>
       </el-aside>
-      <br/>
+      <br class="hidden-sm-and-down"/>
       <el-alert
         v-if="isSectionListApiError"
         :title="sectionListApiErrorMsg"
@@ -33,6 +33,26 @@
         <abstract-section-detail class="presentation-section" v-for="section in sectionList" :sectionDetail="section"
                             :key="section.id" :presentationId="presentationId" :version="presentationFormVersion"/>
         <EmptySection v-if="isSectionListEmpty" />
+      </el-card>
+      <el-card class="hidden-md-and-up add-section-card" v-if="isLogin">  
+        <div slot="header" class="clearfix">
+          <span> Add section </span>
+        </div>
+        <el-select class= "selectionInput" v-model="selectedNewSection" placeholder="Please select a section to add"
+                  filterable>
+          <el-option-group
+            v-for="group in predefinedSections"
+            :key="group.label"
+            :label="group.label">
+            <el-option
+              v-for="item in group.options"
+              :key="item.value"
+              :label="item.label"
+              :value="item.value">
+            </el-option>
+          </el-option-group>
+        </el-select>
+        <el-button class="selectionInputButton" icon="el-icon-plus" type="success" @click="addNewSection">Add New Section</el-button>
       </el-card>
     </div>
   </div>
@@ -48,9 +68,6 @@
   export default {
     props: {
       presentationId: String,
-      presentationFormVersion: String,
-      versions: Array,
-      fileTypes: Array,
     },
     watch: {
       presentationId: 'fetchSectionList',
@@ -124,6 +141,15 @@
       },
       isLoadingDBMetaData() {
         return this.$store.state.dbMetaData.entitiesStatus.isLoading
+      },
+      versions() {
+          return this.$store.getters.versionIdList;
+      },
+      presentationFormVersion() {
+        return this.$store.state.presentation.presentationForm.version;
+      },
+      fileTypes() {
+        return this.$store.getters.getFileTypes(this.presentationFormVersion);
       },
     },
     components: {
@@ -212,5 +238,8 @@
   }
   .el-aside {
     height: 10px;
+  }
+  .add-section-card {
+    margin-top: 10px;
   }
 </style>

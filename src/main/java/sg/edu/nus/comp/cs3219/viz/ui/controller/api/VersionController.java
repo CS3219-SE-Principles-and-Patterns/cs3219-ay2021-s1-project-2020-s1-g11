@@ -40,13 +40,13 @@ public class VersionController extends BaseRestController{
      * @return
      * @throws URISyntaxException
      */
-    @PostMapping("/version/{versionId}")
-    public ResponseEntity<?> newVersion(@PathVariable String versionId) throws URISyntaxException {
+    @PostMapping("/version")
+    public ResponseEntity<?> newVersion(@RequestBody Version version) throws URISyntaxException {
         UserInfo userInfo = gateKeeper.verifyLoginAccess();
 
-        this.versionLogic.saveForUser(versionId, userInfo.getUserEmail());
+        Version newVersion = this.versionLogic.saveForUser(version, userInfo.getUserEmail());
 
-        return ResponseEntity.created(new URI("/version")).build();
+        return ResponseEntity.created(new URI("/version/" + newVersion.getId())).build();
     }
 
     /**
@@ -58,7 +58,7 @@ public class VersionController extends BaseRestController{
     @PutMapping("/version/{old_versionId}")
     public ResponseEntity<?> editVersionId(@PathVariable String old_versionId, @RequestBody String new_versionId) throws URISyntaxException {
         UserInfo userInfo = gateKeeper.verifyLoginAccess();
-
+        
         Boolean editSuccess = this.versionLogic.editVersionId(userInfo.getUserEmail(), old_versionId, new_versionId);
         
         if (editSuccess) {
@@ -74,6 +74,30 @@ public class VersionController extends BaseRestController{
         UserInfo userInfo = gateKeeper.verifyLoginAccess();
 
         Boolean deleteSuccess = this.versionLogic.deleteVersion(userInfo.getUserEmail(), versionId);
+
+        if (deleteSuccess) {
+            return ResponseEntity.ok().build();
+        }
+        else {
+            return ResponseEntity.notFound().build();
+        }
+    }
+
+    @DeleteMapping("/version/{recordType}/{versionId}")
+    public ResponseEntity<Void> deleteVersionRecord(@PathVariable String recordType, @PathVariable String versionId) {
+        UserInfo userInfo = gateKeeper.verifyLoginAccess();
+        Boolean deleteSuccess = false;
+        switch (recordType) {
+            case "author":
+                deleteSuccess = this.versionLogic.deleteVersionRecord(userInfo.getUserEmail(), "AuthorRecord", versionId);
+                break;
+            case "review":
+                deleteSuccess = this.versionLogic.deleteVersionRecord(userInfo.getUserEmail(), "ReviewRecord", versionId);
+                break;
+            case "submission":
+                deleteSuccess = this.versionLogic.deleteVersionRecord(userInfo.getUserEmail(), "SubmissionRecord", versionId);
+                break;
+        }
 
         if (deleteSuccess) {
             return ResponseEntity.ok().build();

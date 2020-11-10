@@ -6,6 +6,34 @@
         v-if="!isLogin && !isAppLoading">
       &nbsp;<el-button type="warning" plain size="mini" @click="navigateToHomePage">Return to the Home Page</el-button>
     </el-alert>
+    <div v-if="isLogin">
+    <el-dialog
+        title="Success"
+        :visible.sync="uploadSuccess"
+        width="30%" center>
+      <span>You have successfully imported data using the column mapping!</span>
+      <span slot="footer" class="dialog-footer">
+          <el-button type="primary" v-on:click="closeSuccess">OK</el-button>
+        </span>
+    </el-dialog>
+    <el-dialog
+      title="Upload"
+      :visible.sync="isUploadingRecord"
+      width="80%" center>
+      <label class="label">{{ dbSchemas.length === 0 ? " " : dbSchemas[this.editingRecord.tableType].name }}</label>
+      <el-upload class="form-item" drag action=""
+                 :auto-upload="false"
+                 :show-file-list="false"
+                 :multiple="false"
+                 :on-change="file => fileUploadHandler(file, editingRecord.tableType, editingRecord.versionId)"
+                 :disabled="editingRecord.mappingFinished"
+      >
+        <div>
+          <i class="el-icon-upload"></i>
+          <div class="el-upload__text">Drop .csv file here or <em>click to upload</em></div>
+        </div>
+      </el-upload>
+    </el-dialog>
     <h1 class="alignLeft">My Data</h1>
     <el-button class="alignRight" type="primary" icon="el-icon-plus"
            v-if="!isDataListEmpty" @click="handleImportData">Import Data</el-button>
@@ -30,13 +58,25 @@
                     Upload<i class="el-icon-arrow-down el-icon--right"></i>
                   </el-button>
                   <el-dropdown-menu slot="dropdown">
-                    <el-dropdown-item v-for="record in allRecords.filter(x => !getFileTypes(version).includes(x))" :key="record" :command="record">{{record}}</el-dropdown-item>
+                    <el-dropdown-item v-for="record in allRecords.filter(x => !getFileTypes(version).includes(x))" :key="record" :command="record">
+                      {{record}}
+                    </el-dropdown-item>
                   </el-dropdown-menu>
                 </el-dropdown>
                 <el-button-group>
-                  <el-button v-if="version !== editingVersion" type="primary" @click="() => {editingVersion = version; editedVersionName = version;}" icon="el-icon-edit">
-                    Edit
-                  </el-button>
+                  <el-tooltip content="Edit is only available if all records are present"
+                              effect="light"
+                              :open-delay="300"
+                              placement="top">
+                    <el-button v-if="version !== editingVersion" type="primary"
+                               @click="() => {
+                                 if (allRecords.filter(x => !getFileTypes(version).includes(x)).length > 0)
+                                   return
+                                 editingVersion = version; editedVersionName = version;
+                               }" icon="el-icon-edit">
+                      Edit
+                    </el-button>
+                  </el-tooltip>
                   <el-button v-if="version === editingVersion" type="primary" @click="saveNewVersionId(editingVersion, editedVersionName)" icon="el-icon-check">
                     Save
                   </el-button>
@@ -59,12 +99,15 @@
         </zoom-center-transition>
       </li>
     </ul>
+    </div>
   </el-main>
 </template>
 
 <script>
 import EmptyData from "@/components/emptyStates/EmptyData";
 import {ZoomCenterTransition} from 'vue2-transitions'
+import Papa from "papaparse";
+import fileParser from "@/store/modules/fileParser";
 
 export default {
   name: "ManageData",
@@ -74,12 +117,20 @@ export default {
   },
   data() {
     return {
+      showMappingTool: false,
       editingVersion: "",
       editedVersionName: "_",
       allRecords: ["AuthorRecord", "SubmissionRecord", "ReviewRecord"],
+      isUploadingRecord: false,
+      editingRecord: {
+        mappingFinished: false,
+        tableType: 0,
+        versionId: ""
+      }
     }
   },
   beforeCreate() {
+    this.$store.dispatch('fetchDBMetaDataEntities');
     this.$store.dispatch('getVersionList');
   },
   computed: {
@@ -90,10 +141,19 @@ export default {
       return this.$store.state.isPageLoading || this.$store.state.dbMetaData.entitiesStatus.isLoading;
     },
     isDataListEmpty() {
-      return this.versions.length <= 0;
+      return !this.$store.getters.hasVersionData;
     },
     versions() {
-      return Array.from(new Set(this.$store.state.dataManage.versionList.map(v => v.versionId)));
+      return this.$store.getters.versionIdList;
+    },
+    dbSchemas: function () {
+      return this.$store.state.dbMetaData.entities;
+    },
+    currentRecordIndex() {
+      return this.$store.state.dataMapping.data.currentRecordIndex;
+    },
+    uploadSuccess: function () {
+      return this.$store.state.dataMapping.isUploadSuccess;
     },
     conferenceName: {
       get() {
@@ -118,7 +178,21 @@ export default {
       }
     },
   },
+  watch: {
+    dbSchemas(newValue) {
+      if (newValue.length > 0 && !this.$store.state.dataMapping.data.initialized) {
+        this.$store.commit('initDataRecords', this.$store.state.dbMetaData.entities);
+      }
+    }
+  },
   methods: {
+    closeSuccess: function () {
+      this.isUploadingRecord = false;
+      this.$store.commit("setUploadSuccess", false);
+      this.$store.commit('initDataRecords', this.$store.state.dbMetaData.entities);
+      this.$store.commit("clearVersionId");
+      this.$store.dispatch('getVersionList');
+    },
     navigateToHomePage() {
       this.$router.replace("/home");
     },
@@ -126,11 +200,11 @@ export default {
       this.$router.push("/importData");
     },
     getFileTypes(versionId) {
-      return this.$store.state.dataManage.versionList.filter(v => v.versionId === versionId).map(v => v.recordType);
+      return this.$store.getters.getFileTypes(versionId);
     },
     saveNewVersionId(oldVersionId, newVersionId) {
       this.editingVersion = ""
-      return this.$store.dispatch("updateVersion", [oldVersionId, newVersionId]);
+      return this.$store.dispatch("editVersion", [oldVersionId, newVersionId]);
     },
     deleteRecord(versionId, recordType) {
       switch (recordType) {
@@ -145,11 +219,38 @@ export default {
     deleteAllRecords(versionId) {
       return this.$store.dispatch("deleteVersion", versionId);
     },
-    /* eslint-disable no-unused-vars */
+    fileUploadHandler(file, idx, version) {
+      // show loading and go parsing
+      this.$store.commit("setPageLoadingStatus", true);
+      this.$store.commit("setCurrentRecordIndex", idx);
+      this.$store.commit("setVersionId", version);
+
+      // TODO: Fix Error Here
+      Papa.parse(file.raw, {
+        // ignoring empty lines in csv file
+        skipEmptyLines: true,
+        complete: (result) => {
+          fileParser.parser.bind(this)(result);
+          this.$store.dispatch("persistMappingNewVersion");
+          this.$store.commit("setPageLoadingStatus", false);
+        }
+      });
+    },
     uploadRecord(versionId, recordType) {
-      // TODO: Wait for mapping to be done
-    }
-    /* eslint-enable no-unused-vars */
+      switch (recordType) {
+        case 'AuthorRecord':
+          this.editingRecord.tableType = 0;
+          break;
+        case 'ReviewRecord':
+          this.editingRecord.tableType = 1;
+          break;
+        case 'SubmissionRecord':
+          this.editingRecord.tableType = 2;
+          break;
+      }
+      this.editingRecord.versionId = versionId;
+      this.isUploadingRecord = true;
+    },
   }
 }
 </script>

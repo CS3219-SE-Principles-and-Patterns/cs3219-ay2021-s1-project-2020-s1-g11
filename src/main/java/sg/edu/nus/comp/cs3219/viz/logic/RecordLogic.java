@@ -128,51 +128,32 @@ public class RecordLogic {
         submissionRecordRepository.deleteAllByVersionEquals(versionToDelete);
     }
 
-    @Transactional 
+    @Transactional
     public void editVersionId(String dataSet, String old_versionId, String new_versionId) {
-        Version oldAuthorVersion = new Version(new Version.VersionPk(dataSet, "AuthorRecord", old_versionId));
-        Version oldReviewVersion = new Version(new Version.VersionPk(dataSet, "ReviewRecord", old_versionId));
-        Version oldSubmissionVersion = new Version(new Version.VersionPk(dataSet, "SubmissionRecord", old_versionId));
-        Version newAuthorVersion = new Version(new Version.VersionPk(dataSet, "AuthorRecord", new_versionId));
-        Version newReviewVersion = new Version(new Version.VersionPk(dataSet, "ReviewRecord", new_versionId));
-        Version newSubmissionVersion = new Version(new Version.VersionPk(dataSet, "SubmissionRecord", new_versionId));
 
         // Author
+        Version oldAuthorVersion = new Version(new Version.VersionPk(dataSet, "AuthorRecord", old_versionId));
+        Version newAuthorVersion = new Version(new Version.VersionPk(dataSet, "AuthorRecord", new_versionId));
         List<AuthorRecord> authorRecordList = new ArrayList<AuthorRecord>(authorRecordRepository.findByVersionEquals(oldAuthorVersion));
-        authorRecordRepository.deleteAllByVersionEquals(oldAuthorVersion);
-        authorRecordRepository.saveAll(authorRecordList.stream().peek(r -> {
-            r.setId(null);
-            r.setVersion(newAuthorVersion);
-        }).collect(Collectors.toList()));
+        for (AuthorRecord authorRecord : authorRecordList) {
+            authorRecord.setVersion(newAuthorVersion);
+        }
 
         // Review
+        Version oldReviewVersion = new Version(new Version.VersionPk(dataSet, "ReviewRecord", old_versionId));
+        Version newReviewVersion = new Version(new Version.VersionPk(dataSet, "ReviewRecord", new_versionId));
         List<ReviewRecord> reviewRecordList = new ArrayList<ReviewRecord>(reviewRecordRepository.findByVersionEquals(oldReviewVersion));
-        reviewRecordRepository.deleteAllByVersionEquals(oldReviewVersion);
-        reviewRecordRepository.saveAll(reviewRecordList.stream().peek(r -> {
-            r.setId(null);
-            r.setVersion(newReviewVersion);
-        }).collect(Collectors.toList()));  
-
+        for (ReviewRecord reviewRecord : reviewRecordList) {
+            reviewRecord.setVersion(newReviewVersion);
+        }
+        
         // Submission
+        Version oldSubmissionVersion = new Version(new Version.VersionPk(dataSet, "SubmissionRecord", old_versionId));
+        Version newSubmissionVersion = new Version(new Version.VersionPk(dataSet, "SubmissionRecord", new_versionId));
         List<SubmissionRecord> submissionRecordList = new ArrayList<SubmissionRecord>(submissionRecordRepository.findByVersionEquals(oldSubmissionVersion));
-        submissionRecordRepository.deleteAllByVersionEquals(oldSubmissionVersion);
-        submissionRecordRepository.saveAll(submissionRecordList.stream().peek(s -> {
-            s.setId(null);
-            s.setVersion(newSubmissionVersion);
-            List<SubmissionAuthorRecord> submissionAuthorRecords = s.getAuthors().stream()
-                    .map(authorName -> {
-                        SubmissionAuthorRecord existing = submissionAuthorRecordRepository.findFirstByNameEqualsAndDataSetEquals(authorName, dataSet);
-                        if (existing == null) {
-                            existing = new SubmissionAuthorRecord();
-                            existing.setDataSet(dataSet);
-                            existing.setName(authorName);
-                            existing = submissionAuthorRecordRepository.save(existing);
-                        }
-                        return existing;
-                    })
-                    .collect(Collectors.toList());
-            s.setAuthorSet(submissionAuthorRecords);
-        }).collect(Collectors.toList()));
+        for (SubmissionRecord submissionRecord : submissionRecordList) {
+            submissionRecord.setVersion(newSubmissionVersion);
+        }
     }
 
     @Transactional

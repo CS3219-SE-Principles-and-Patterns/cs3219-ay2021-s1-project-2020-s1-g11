@@ -1,7 +1,8 @@
 <template>
     <el-main>
         <h1 class="alignLeft">My Conferences </h1>
-        <el-button class="alignRight" type="primary" icon="el-icon-plus" @click="createConference">Add New Conference</el-button>
+        <el-button class="alignRight hidden-sm-and-down" type="primary" icon="el-icon-plus" @click="createConference">Add New Conference</el-button>
+        <el-button class="alignRight hidden-md-and-up" type="primary" icon="el-icon-plus" @click="createConference"></el-button>
         <br/>
         <el-divider></el-divider>
         <zoom-center-transition :duration="500" :delay="100">
@@ -15,7 +16,7 @@
 </template>
 
 <script>
-    import {ZoomCenterTransition} from 'vue2-transitions'
+    import { ZoomCenterTransition } from 'vue2-transitions'
     import { FullCalendar } from 'vue-full-calendar'    
     import ConferenceBrief from "@/components/ConferenceBrief.vue";
 
