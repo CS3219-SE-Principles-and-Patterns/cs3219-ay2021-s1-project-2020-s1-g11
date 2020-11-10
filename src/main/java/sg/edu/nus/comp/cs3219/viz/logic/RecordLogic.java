@@ -130,7 +130,6 @@ public class RecordLogic {
 
     @Transactional
     public void editVersionId(String dataSet, String old_versionId, String new_versionId) {
-        new_versionId = new_versionId.substring(18, new_versionId.length() - 2);
 
         // Author
         Version oldAuthorVersion = new Version(new Version.VersionPk(dataSet, "AuthorRecord", old_versionId));
