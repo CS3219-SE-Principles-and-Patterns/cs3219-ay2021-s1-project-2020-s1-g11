@@ -123,7 +123,7 @@
         return this.$store.state.presentation.presentationListStatus.isApiError
       },
       hasData: function() {
-        return this.$store.state.dataManage.versionList.length > 0;
+        return this.$store.getters.hasVersionData;
       }
     },
     components: {

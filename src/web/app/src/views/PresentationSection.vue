@@ -3,17 +3,10 @@
         <el-container>
             <el-main>
                 <presentation-brief 
-                    :id="id" 
-                    :version="presentationFormVersion" 
-                    :versions="versions"
-                    :fileTypes="getFileTypes(presentationFormVersion)"
-                    v-on:version-change="e => handleVersionChange(e)"
+                    :id="id"
                 />
                 <section-list-panel 
                     :presentationId="id" 
-                    :presentationFormVersion="presentationFormVersion" 
-                    :versions="versions"
-                    :fileTypes="getFileTypes(presentationFormVersion)"
                 />
             </el-main>
         </el-container>
@@ -83,21 +76,6 @@
             isNewPresentation() {
                 return this.presentationId === ID_NEW_PRESENTATION
             },
-            versions() {
-                let list = Array.from(new Set(this.$store.state.dataManage.versionList.map(v => v.versionId)));
-                return list;
-            },
-            presentationFormVersion: {
-                get() {
-                    return this.$store.state.presentation.presentationForm.version;
-                },
-                set(value) {
-                    this.$store.commit('setPresentationFormField', {
-                        field: 'version',
-                        value
-                    });
-                }
-            },
             sectionList() {
                 return this.$store.state.section.sectionList
             },
@@ -132,12 +110,6 @@
                 } else {
                     this.$store.dispatch('fetchSectionList', this.presentationId)
                 }
-            },
-            handleVersionChange(e) {
-                this.presentationFormVersion = e;
-            },
-            getFileTypes(versionId) {
-                return this.$store.state.dataManage.versionList.filter(v => v.versionId === versionId).map(v => v.recordType);
             },
         }
     }

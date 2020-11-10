@@ -147,10 +147,10 @@ export default {
       return this.$store.state.isPageLoading || this.$store.state.dbMetaData.entitiesStatus.isLoading;
     },
     isDataListEmpty() {
-      return this.versions.length <= 0;
+      return !this.$store.getters.hasVersionData;
     },
     versions() {
-      return Array.from(new Set(this.$store.state.dataManage.versionList.map(v => v.versionId)));
+      return this.$store.getters.versionIdList;
     },
     dbSchemas: function () {
       return this.$store.state.dbMetaData.entities;

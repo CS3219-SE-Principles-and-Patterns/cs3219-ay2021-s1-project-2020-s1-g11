@@ -48,8 +48,8 @@
               <el-input v-model="presentationFormName" v-if="isInEditMode"/>
             </el-form-item>
             <el-form-item label="Data Set: " :prop="isInEditMode ? 'dataset' : ''">
-              <span v-if="!isInEditMode">{{ version }}</span>
-              <el-select v-if="isInEditMode" :value="version" v-on:change="e => $emit('version-change', e)" placeholder="Please select a version" >
+              <span v-if="!isInEditMode">{{ presentationForm.version }}</span>
+              <el-select v-if="isInEditMode" :value="presentationForm.version" v-on:change="e => this.presentationFormVersion = e" placeholder="Please select a version" >
                 <el-option v-for="v in versions" :key="v" :label="v" :value="v">
                 </el-option>
               </el-select>
@@ -112,9 +112,6 @@
     name: 'PresentationBrief',
     props: {
       id: String,
-      version: String,
-      versions: Array,
-      fileTypes: Array,
     },
     beforeCreate() {
         this.$store.dispatch('getVersionList');
@@ -140,6 +137,7 @@
           name: this.presentationFormName,
           creatorIdentifier: this.presentationFormCreatorIdentifier,
           description: this.presentationFormDescription,
+          version: this.presentationFormVersion,
         }
       },
       presentationFormName: {
@@ -166,6 +164,23 @@
             value
           })
         },
+      },
+      versions() {
+          return this.$store.getters.versionIdList;
+      },
+      presentationFormVersion: {
+          get() {
+              return this.$store.state.presentation.presentationForm.version;
+          },
+          set(value) {
+              this.$store.commit('setPresentationFormField', {
+                  field: 'version',
+                  value
+              });
+          }
+      },
+      fileTypes() {
+        return this.$store.getters.getFileTypes(this.presentationFormVersion);
       },
       isNewPresentation() {
         return this.id === ID_NEW_PRESENTATION
