@@ -68,7 +68,7 @@ export default {
                 axios.post('/api/version', {versionId: payload[1], recordType: "ReviewRecord"}),
                 axios.post('/api/version', {versionId: payload[1], recordType: "SubmissionRecord"}),
             ]).then(() => {
-                axios.put('/api/record/' + payload[0], payload[1]).then(() => {
+                axios.put('/api/record/' + payload[0] + '/' + payload[1]).then(() => {
                     axios.delete('/api/version/' + payload[0]).then(() => {
                         axios.get('/api/version').then(response => {
                             commit('setVersionList', response.data)
