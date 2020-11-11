@@ -1,0 +1,187 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`InstructionsGuide.vue renders correctly 1`] = `
+<el-collapse-stub
+  value=""
+>
+  <el-collapse-item-stub
+    name="1"
+    title="Importing CSV Data"
+  >
+    <ol>
+      <li>
+        Log in.
+      </li>
+       
+      <li>
+        Click on "Import Data".
+      </li>
+       
+      <li>
+        Fill in the forms. 
+      </li>
+       
+      <li>
+        Upload your CSV data. 
+      </li>
+       
+      <li>
+        Map the CSV column headers
+      </li>
+       
+      <li>
+        Upload!
+      </li>
+    </ol>
+  </el-collapse-item-stub>
+   
+  <el-collapse-item-stub
+    name="2"
+    title="Make Presentation"
+  >
+    <ol>
+      <li>
+        Click on "Analyze".
+      </li>
+       
+      <li>
+        Create a new presentation.
+      </li>
+       
+      <li>
+        Select the visualizations you want.
+      </li>
+       
+      <li>
+        Click "Add New Section"
+      </li>
+       
+      <li>
+        In Edit Mode, users can:
+      </li>
+       
+      <ul>
+        <li>
+          Change the name and description.
+        </li>
+         
+        <li>
+          Edit the mode of visualization.
+        </li>
+         
+        <li>
+          Add data filters for the field.
+        </li>
+         
+        <li>
+          Preview the changes.
+        </li>
+      </ul>
+       
+      <li>
+        There is no limit to the number of visualizations!
+      </li>
+    </ol>
+  </el-collapse-item-stub>
+   
+  <el-collapse-item-stub
+    name="3"
+    title="Sharing Presentation"
+  >
+    <ol>
+      <li>
+        Click on "SHARE"
+      </li>
+       
+      <li>
+        Enter the email address of the person you want to share it with.
+      </li>
+       
+      <li>
+        Change the permission (view or edit) given to the user. 
+      </li>
+    </ol>
+  </el-collapse-item-stub>
+   
+  <el-collapse-item-stub
+    name="4"
+    title="Download presentations as PDF"
+  >
+    <p>
+       Pre-requisites: You must have create a presentation. 
+    </p>
+     
+    <ol>
+      <li>
+        Click on "Analyze".
+      </li>
+       
+      <li>
+        Select the presentation that you want to view.
+      </li>
+       
+      <li>
+        Click "PDF".
+      </li>
+       
+      <li>
+        And you get the presentation generated in PDF.
+      </li>
+    </ol>
+  </el-collapse-item-stub>
+   
+  <el-collapse-item-stub
+    name="5"
+    title="Download presentations as Powerpoint"
+  >
+    <p>
+       Pre-requisites: You must have create a presentation. 
+    </p>
+     
+    <ol>
+      <li>
+        Click on "Analyze".
+      </li>
+       
+      <li>
+        Select the presentation that you want to view.
+      </li>
+       
+      <li>
+        Click "Powerpoint".
+      </li>
+       
+      <li>
+        And you get the presentation generated in Powerpoint slides.
+      </li>
+    </ol>
+  </el-collapse-item-stub>
+   
+  <el-collapse-item-stub
+    name="6"
+    title="Manage conference"
+  >
+    <ol>
+      <li>
+        Click on "Track".
+      </li>
+       
+      <li>
+        Click on "Add new conferences".
+      </li>
+       
+      <li>
+        Create a new conference.
+      </li>
+       
+      <li>
+        Select the conference you want from the calendar.
+      </li>
+       
+      <li>
+        You get the conference details.
+      </li>
+    </ol>
+  </el-collapse-item-stub>
+</el-collapse-stub>
+`;

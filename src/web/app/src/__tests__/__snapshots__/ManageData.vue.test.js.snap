@@ -1,0 +1,28 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`ManageData.vue renders correctly 1`] = `
+<el-main-stub>
+  <el-alert-stub
+    closable="true"
+    closetext=""
+    description=""
+    effect="light"
+    title="You need to login to view the page"
+    type="error"
+  >
+    
+     
+    <el-button-stub
+      icon=""
+      nativetype="button"
+      plain="true"
+      size="mini"
+      type="warning"
+    >
+      Return to the Home Page
+    </el-button-stub>
+  </el-alert-stub>
+   
+  <!---->
+</el-main-stub>
+`;
