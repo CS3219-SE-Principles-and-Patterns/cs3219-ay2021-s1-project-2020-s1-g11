@@ -1,0 +1,39 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`UserGuide.vue renders correctly 1`] = `
+<div>
+  <div>
+    <el-container-stub>
+      <el-main-stub>
+        <el-tabs-stub
+          tabposition="top"
+        >
+          <el-tab-pane-stub
+            label="Overview"
+          >
+            <overviewguide-stub />
+          </el-tab-pane-stub>
+           
+          <el-tab-pane-stub
+            label="Features"
+          >
+            <featureguide-stub />
+          </el-tab-pane-stub>
+           
+          <el-tab-pane-stub
+            label="Instructions"
+          >
+            <instructionsguide-stub />
+          </el-tab-pane-stub>
+           
+          <el-tab-pane-stub
+            label="FAQ"
+          >
+            <faqguide-stub />
+          </el-tab-pane-stub>
+        </el-tabs-stub>
+      </el-main-stub>
+    </el-container-stub>
+  </div>
+</div>
+`;

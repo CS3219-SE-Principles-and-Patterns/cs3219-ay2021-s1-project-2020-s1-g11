@@ -1,0 +1,54 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`FAQGuide.vue renders correctly 1`] = `
+<el-collapse-stub
+  value=""
+>
+  <el-collapse-item-stub
+    name="1"
+    title="How to use our user guide?"
+  >
+    
+    We have provided 4 different panels for our user guide:
+    
+    <ol>
+      <li>
+         Overview
+      </li>
+       
+      <li>
+         Features - To describe the features that our system can provide 
+      </li>
+       
+      <li>
+         Instructions - To provide a detailed instructions on how to use ChairVise features 
+      </li>
+       
+      <li>
+         FAQ - To list out commonly asked questions by user 
+      </li>
+    </ol>
+    
+    To use our user guide, click on any of the tabs above to begin exploring.
+  
+  </el-collapse-item-stub>
+   
+  <el-collapse-item-stub
+    name="2"
+    title="My chart seems to overlapped"
+  >
+    <p>
+       Scroll all the way to the top and click "PDF" / "Powerpoint" again. 
+    </p>
+  </el-collapse-item-stub>
+   
+  <el-collapse-item-stub
+    name="3"
+    title="Cannot upload Review Record with no header for EasyChair"
+  >
+    <p>
+       Use the with header option. 
+    </p>
+  </el-collapse-item-stub>
+</el-collapse-stub>
+`;

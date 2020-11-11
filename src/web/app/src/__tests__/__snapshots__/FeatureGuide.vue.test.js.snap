@@ -1,0 +1,112 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`FeatureGuide.vue renders correctly 1`] = `
+<el-collapse-stub
+  value=""
+>
+  <el-collapse-item-stub
+    name="1"
+    title="Word cloud for all submissions keywords"
+  >
+    <img
+      class="img-fluid"
+      src="@/assets/userGuide/wordCloudSubmissions.png"
+    />
+  </el-collapse-item-stub>
+   
+  <el-collapse-item-stub
+    name="2"
+    title="Submission rank author/country/organization"
+  >
+    <img
+      class="img-fluid"
+      src="@/assets/userGuide/SubmissionRankViz.png"
+    />
+  </el-collapse-item-stub>
+   
+  <el-collapse-item-stub
+    name="3"
+    title="Accepted submission organization rank"
+  >
+    <img
+      class="img-fluid"
+      src="@/assets/userGuide/AcceptedSubmissionOrgRank.png"
+    />
+  </el-collapse-item-stub>
+   
+  <el-collapse-item-stub
+    name="4"
+    title="Review Score Distribution/weighted evaluation score statistic summary"
+  >
+    <img
+      class="img-fluid"
+      src="@/assets/userGuide/ReviewScoreDistributionViz.png"
+    />
+  </el-collapse-item-stub>
+   
+  <el-collapse-item-stub
+    name="5"
+    title="Reviewer Expertise Level Statistic Summary"
+  >
+    <img
+      class="img-fluid"
+      src="@/assets/userGuide/ReviewerExpertiseLevelSummary.png"
+    />
+  </el-collapse-item-stub>
+   
+  <el-collapse-item-stub
+    name="6"
+    title="Number of Review Assignment based on Confidence Level using Scatter Chart"
+  >
+    <img
+      class="img-fluid"
+      src="@/assets/userGuide/scatterChart.png"
+    />
+  </el-collapse-item-stub>
+   
+  <el-collapse-item-stub
+    name="7"
+    title="Co-authorship"
+  >
+    <ul>
+      <li>
+        <p>
+           Graph Network 
+        </p>
+         
+        <img
+          class="img-fluid"
+          src="@/assets/userGuide/graphNetworkCoAuthorViz.png"
+        />
+      </li>
+       
+      <li>
+        <p>
+           Dependency Wheel 
+        </p>
+         
+        <img
+          class="img-fluid"
+          src="@/assets/userGuide/dependencyWheelCoAuthorViz.png"
+        />
+      </li>
+       
+      <li>
+        <p>
+           Radar Chart 
+        </p>
+         
+        <img
+          class="img-fluid"
+          src="@/assets/userGuide/radarChartCoAuthorViz.png"
+        />
+      </li>
+    </ul>
+  </el-collapse-item-stub>
+   
+  <el-collapse-item-stub
+    name="8"
+    title="Enable data persistance"
+  />
+</el-collapse-stub>
+`;
