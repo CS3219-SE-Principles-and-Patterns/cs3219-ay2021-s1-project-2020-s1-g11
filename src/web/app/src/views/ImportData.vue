@@ -262,7 +262,7 @@
               this.showMappingTool = true
           }
         });
-      }
+        }
     },
     components: {
       MappingTool

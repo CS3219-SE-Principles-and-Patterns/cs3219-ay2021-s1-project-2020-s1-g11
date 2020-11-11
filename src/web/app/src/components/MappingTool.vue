@@ -2,34 +2,37 @@
   <el-row :gutter="20" class="map-container">
 
     <!-- left part of the page -->
-    <el-col :span="20" class="map-result">
+    <el-col :span="15" class="map-result">
       <el-card>
         <div>
           <h3 class="mapping-header">Preview</h3>
         </div>
         <div>
           <h3>Raw</h3>
-          <table>
-            <tr>
-              <th v-for="cell in uploadedRaw[0]" v-bind:key="cell">{{cell}}</th>
-            </tr>
-            <tr v-for="item in uploadedRaw.slice(1, 6)" v-bind:key="item">
-              <td v-for="cell in item" v-bind:key="cell">{{cell}}</td>
-            </tr>
-          </table>
+          <div style="max-height: 200px; overflow: scroll">
+            <table>
+              <tr>
+                <th v-for="cell in uploadedRaw[0]" v-bind:key="cell">{{ cell }}</th>
+              </tr>
+              <tr v-for="item in uploadedRaw.slice(1, 6)" v-bind:key="item">
+                <td v-for="cell in item" v-bind:key="cell">{{ cell }}</td>
+              </tr>
+            </table>
+          </div>
 
-          <h3>Mapped</h3>
-          <table>
-            <tr>
-              <th v-for="i in Object.keys(uploadedData[0])" v-bind:key="i">
-                {{i}}
-              </th>
-            </tr>
-            <tr v-for="item in uploadedData.slice(0, 5)" v-bind:key="item">
-
-              <td v-for="cell in item" v-bind:key="cell">{{cell}}</td>
-            </tr>
-          </table>
+          <h3>Preview</h3>
+          <div style="max-height: 200px; overflow: scroll">
+            <table>
+              <tr>
+                <th v-for="i in Object.keys(uploadedData[0])" v-bind:key="i">
+                  {{ i }}
+                </th>
+              </tr>
+              <tr v-for="item in uploadedData.slice(0, 5)" v-bind:key="item">
+                <td v-for="cell in item" v-bind:key="cell">{{ cell }}</td>
+              </tr>
+            </table>
+          </div>
         </div>
       </el-card>
     </el-col>
@@ -43,8 +46,6 @@
           <h3>Mapping function</h3>
           <textarea v-model="mapFunctionRaw" rows="25" cols="50">
           </textarea>
-          <div v-html="mapFunctionRaw"></div>
-          <el-button @click="updateMapFunction"></el-button>
         </div>
         <!-- end of db fields -->
 
@@ -65,8 +66,9 @@
         <!-- button group -->
         <el-row class="button-row">
           <el-col>
+            <el-button class="back-button" type="primary" @click="updateMapFunction">Apply</el-button>
             <el-button class="back-button" type="success" v-on:click="uploadClicked">Confirm</el-button>
-            <el-button class="back-button" type="info" v-on:click="backClicked">Cancel</el-button>
+            <el-button class="back-button" type="danger" v-on:click="backClicked">Cancel</el-button>
           </el-col>
         </el-row>
         <!-- end of button group -->
@@ -87,7 +89,7 @@ export default {
       mapFunction: x => x,
       mapFunctionRaw: '',
       uploadedData: this.$store.state.dataMapping.data.records[this.$store.state.dataMapping.data.currentRecordIndex].uploadedData,
-      uploadedRaw:  this.$store.state.dataMapping.data.records[this.$store.state.dataMapping.data.currentRecordIndex].uploadedRaw,
+      uploadedRaw: this.$store.state.dataMapping.data.records[this.$store.state.dataMapping.data.currentRecordIndex].uploadedRaw,
 
       // currently selected database tag and imported tag todo cleanup
       selectedDBTag: -1,
@@ -118,19 +120,6 @@ export default {
       });
     },
 
-    // generates imported tags.
-    // if initially no tag, just display column number
-    importList: function () {
-      if (this.$store.state.dataMapping.data.records[this.$store.state.dataMapping.data.currentRecordIndex].hasHeader) {
-        return this.$store.state.dataMapping.data.records[this.$store.state.dataMapping.data.currentRecordIndex].uploadedLabel;
-      }
-      let lst = [];
-      for (let i = 0; i < this.$store.state.dataMapping.data.records[this.$store.state.dataMapping.data.currentRecordIndex].uploadedLabel.length; i++) {
-        lst.push("Column " + (i + 1));
-      }
-      return lst;
-    },
-
     // gets errors
     errors: function () {
       return this.$store.state.dataMapping.error;
@@ -152,6 +141,11 @@ export default {
         const obj = JSON.parse(localStorage.mapFunctionRaw);
         this.mapFunctionRaw = obj[this.currentRecordIndex]
       }
+      let lst = [];
+      for (let i = 0; i < this.$store.state.dataMapping.data.records[this.$store.state.dataMapping.data.currentRecordIndex].uploadedLabel.length; i++) {
+        lst.push("Column " + (i + 1));
+      }
+      return lst;
     },
     errors(newValue) {
       if (newValue.length > 0) {
@@ -218,6 +212,7 @@ export default {
       this.$emit('close-dialog');
     },
     uploadClicked: function () {
+      this.updateMapFunction();
       let map = deepCopy(this.mappedPairs);
       this.$store.commit("setMapping", {"map": map});
       if (this.errors.length === 0) {
