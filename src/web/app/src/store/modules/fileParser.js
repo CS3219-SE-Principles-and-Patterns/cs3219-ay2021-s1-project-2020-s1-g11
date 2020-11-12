@@ -67,7 +67,7 @@ const parsers = {
                 country: row[17],
                 organization: row[10],
                 webpage: "",
-                personId: "",
+                personId: anonymize(row[7], 18) + anonymize(row[8], 18),
                 corresponding: "no"
             }
         }),
@@ -76,11 +76,11 @@ const parsers = {
                 reviewId: 0,
                 submissionId: row[9],
                 numReviewAssignment: 0,
-                reviewerName: row[6] + " " + row[7],
+                reviewerName: anonymize(row[6] + " " + row[7], 18),
                 expertiseLevel: 0,
-                confidenceLevel: row[38],
+                confidenceLevel: parseFloat(row[38]),
                 reviewComment: row[39],
-                overallEvaluationScore: 0,
+                overallEvaluationScore: row.slice(14,37).map(parseInt).reduce((a,b) => isNaN(b) ? a : a + b, 0),
                 reviewSubmissionTime: row[12],
                 hasRecommendedForBestPaper: "n/a",
             }
@@ -121,14 +121,19 @@ export default {
         const data = deepCopy(result.data);
         data.shift(); // remove headers
 
-        let table = result.data
-        if (parser) {
-            table = parser(data);
-            this.$store.commit("setMappingFinished");
+        try {
+            let table = result.data
+            if (parser) {
+                table = parser(data);
+                this.$store.commit("setMappingFinished");
+            }
+            this.$store.commit("setUploadedFile", {data:table, raw:result.data});
+
+        } catch (e) {
+            alert("An error occurred while parsing the file, please ensure that the file is the correct format/type.")
+        } finally {
+            this.$store.commit("setPageLoadingStatus", false);
+
         }
-
-
-        this.$store.commit("setUploadedFile", {data:table, raw:result.data});
-        this.$store.commit("setPageLoadingStatus", false);
     }
 }
