@@ -18,7 +18,7 @@
         title="Success"
         :visible.sync="uploadSuccess"
         width="30%" center>
-        <span>You have successfully imported data using the column mapping!</span>
+        <span>You have successfully imported data!</span>
         <span slot="footer" class="dialog-footer">
           <el-button type="primary" v-on:click="closeSuccess">OK</el-button>
         </span>
