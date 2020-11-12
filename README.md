@@ -6,7 +6,7 @@
 ## Overview
 This project is a tool to analyze paper submission information for conferences. It is basically a visualization tool combined with a backend query service.
 
-Production Website at: https://cs3219-madanalogy.appspot.com/
+Production Website: https://cs3219-madanalogy.appspot.com/
 
 Project Report: [G11 ChairVisE 4.0](docs/G11_ChairVisE4.0.pdf)
 
