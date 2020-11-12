@@ -21,20 +21,22 @@ const parsers = {
                 organization: row[5],
                 webpage: row[6],
                 personId: row[7],
-                corresponding: row[8]
+                isCorresponding: row[8]
             }
         }),
         data => data.map(row => {
+            const overallEvaluation = row[6].split("\n")
+
             return {
                 reviewId: row[0],
                 submissionId: row[1],
-                numReviewAssignment: row[2],
-                reviewerName: row[3],
-                expertiseLevel: row[4],
-                confidenceLevel: "",
+                numReviewAssignment: parseInt(row[2]),
+                reviewerName: anonymize(row[3], 18),
+                expertiseLevel: parseFloat(row[4]),
+                confidenceLevel: parseFloat(overallEvaluation[1].split(":")[1]),
                 reviewComment: row[5],
-                overallEvaluationScore: row[7],
-                reviewSubmissionTime: row[12] + row[13], // todo: use moment to parse
+                overallEvaluationScore: parseFloat(row[7]),
+                reviewSubmissionTime: moment(row[12] + " " + row[13], "YYYY-M-D H:m").format("YYYY-MM-DD hh:mm:ss"),
                 hasRecommendedForBestPaper: row[14],
             }
         }),
@@ -44,9 +46,9 @@ const parsers = {
                 trackId : row[1],
                 trackName : row[2],
                 title : row[3],
-                authors : row[4],
-                submissionTime : row[5],
-                lastUpdatedTime : row[6],
+                authors : [anonymize(row[4], 18)],
+                submissionTime : moment(row[5]).format("YYYY-MM-DD hh:mm:ss"),
+                lastUpdatedTime : moment(row[6]).format("YYYY-MM-DD hh:mm:ss"),
                 keywords : row[8],
                 isAccepted : row[9],
                 isNotified : row[10],
