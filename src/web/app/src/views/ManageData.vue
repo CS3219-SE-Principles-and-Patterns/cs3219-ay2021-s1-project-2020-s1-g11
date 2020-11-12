@@ -11,7 +11,7 @@
         title="Success"
         :visible.sync="uploadSuccess"
         width="30%" center>
-      <span>You have successfully imported data using the column mapping!</span>
+      <span>You have successfully imported data!</span>
       <span slot="footer" class="dialog-footer">
           <el-button type="primary" v-on:click="closeSuccess">OK</el-button>
         </span>
@@ -21,6 +21,14 @@
       :visible.sync="isUploadingRecord"
       width="80%" center>
       <label class="label">{{ dbSchemas.length === 0 ? " " : dbSchemas[this.editingRecord.tableType].name }}</label>
+      <br />
+      <div>
+        <el-radio-group v-model="formatType" class="form-item">
+          <el-radio :label="1">EasyChair</el-radio>
+          <el-radio :label="2">SoftConf</el-radio>
+        </el-radio-group>
+      </div>
+      <br />
       <el-upload class="form-item" drag action=""
                  :auto-upload="false"
                  :show-file-list="false"
@@ -134,6 +142,14 @@ export default {
     this.$store.dispatch('getVersionList');
   },
   computed: {
+    formatType: {
+      get: function () {
+        return this.$store.state.dataMapping.data.formatType;
+      },
+      set: function (newValue) {
+        this.$store.commit("setFormatType", newValue);
+      }
+    },
     isLogin() {
       return this.$store.state.userInfo.isLogin;
     },
@@ -232,7 +248,6 @@ export default {
         complete: (result) => {
           fileParser.parser.bind(this)(result);
           this.$store.dispatch("persistMappingNewVersion");
-          this.$store.commit("setPageLoadingStatus", false);
         }
       });
     },
@@ -249,6 +264,7 @@ export default {
           break;
       }
       this.editingRecord.versionId = versionId;
+      this.formatType = 1;
       this.isUploadingRecord = true;
     },
   }
