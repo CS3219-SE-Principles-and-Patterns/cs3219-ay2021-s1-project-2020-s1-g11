@@ -8,7 +8,7 @@ This project is a tool to analyze paper submission information for conferences. 
 
 Production Website at: https://cs3219-madanalogy.appspot.com/
 
-Code base adapted from: https://github.com/WING-NUS/ChairVisE
+Project Report: [G11 ChairVisE 4.0](docs/G11_ChairVisE4.0.pdf)
 
 ##### Installation Guide
 Pre-requisites: Python 3.8.3, Node 12.18.0, NPM 6.14.4, java 8, MYSQL 5.7
